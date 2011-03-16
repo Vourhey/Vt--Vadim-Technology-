@@ -35,10 +35,7 @@ public:
 	return T(); // возвращаем значение по-умолчанию
     }
     void clear()
-    {
-	free(d);
-	d = 0;
-    }
+        { free(d); d = 0; }
 
     bool contains(const T &value) const;
     int count(const T &value) const;
@@ -58,7 +55,8 @@ public:
     const T &first() const { return at(0); }
 
     int indexOf(const T &value, int from = 0) const;
-    void insert(int i, const T &value);
+    void insert(int i, const T &value)
+	{ insert(i, 1, value); }
     void insert(int i, int count, const T &value);
     bool isEmpty() const { return !d->size; }
 
@@ -266,14 +264,6 @@ int VVector<T>::indexOf(const T &value, int from) const
 	if(d->data[i] == value)
 	    return i;
     return -1;
-}
-
-template<class T>
-void VVector<T>::insert(int i, const T &value)
-{
-    reallocData(d->size+1);
-    ::memmove(d->data+i, d->data+i-1, (d->size - i)*sizeof(T));
-    d->data[i-1] = value;
 }
 
 template<class T>

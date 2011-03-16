@@ -7,25 +7,25 @@ template<class T> \
 class V##C##Iterator \
 { \
 typedef typename V##C<T>::const_iterator const_it; \
-V##C<T> c; \
+const V##C<T> *c; \
 const_it i; \
 public: \
 inline V##C##Iterator(const V##C<T> &cl) \
-    : c(cl), i(c.constBegin()) {} \
+    : c(&cl), i(c->constBegin()) {} \
 inline bool findNext(const T &value) \
-    { while(i!=c.constEnd()) if(*i++ == value) return true; return false;} \
+    { while(i!=c->constEnd()) if(*i++ == value) return true; return false;} \
 inline bool findPrevious(const T &value) \
-    { while(i!=c.constBegin()) if(*--i == value) return true; return false; } \
-inline bool hasNext() const { return i != c.constEnd(); } \
-inline bool hasPrevious() const { return i != c.constBegin(); } \
+    { while(i!=c->constBegin()) if(*--i == value) return true; return false; } \
+inline bool hasNext() const { return i != c->constEnd(); } \
+inline bool hasPrevious() const { return i != c->constBegin(); } \
 inline const T &next() { return *i++; } \
 inline const T &peekNext() const { return *i; } \
 inline const T &peekPrevious() const { return *(i-1); } \
 inline const T &previous() { return *--i; } \
-inline void  toBack() { i = c.constEnd(); } \
-inline void  toFront() { i = c.constBegin(); } \
+inline void  toBack() { i = c->constEnd(); } \
+inline void  toFront() { i = c->constBegin(); } \
 inline V##C##Iterator &operator=(const V##C<T> &cl) \
-    { c = cl; i = c.constBegin(); return *this; } \
+    { c = &cl; i = c->constBegin(); return *this; } \
 };
 
 #define DEFINE_MUTABLE_ITERATOR_FOR_C(C) \
