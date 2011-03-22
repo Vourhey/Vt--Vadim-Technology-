@@ -102,7 +102,7 @@
  * \see VVector::constBegin(), VVector::constEnd() и VVector::iterator
  */
 /*!
- * \typedef VVecotr::const_pointer
+ * \typedef VVector::const_pointer
  * Синоним для const T *. Нужно для совместимости с STL
  */
 /*!

@@ -253,7 +253,7 @@ bool VTime::setHMS(int h, int m, int s, int ms)
  * VTime t;
  * t.start();
  * some_lengthy_task();  // очень большое задание
- * qDebug("Time elapsed: %d ms", t.elapsed());
+ * cout << "Time elapsed: " << t.elapsed() << "ms\n"; 
  * \endcode
  * \see elapsed(), restart()
  */

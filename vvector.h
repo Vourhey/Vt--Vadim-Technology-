@@ -1,7 +1,6 @@
 #ifndef VVECTOR_H
 #define VVECTOR_H
 
-#include <iostream>
 #include "vglobal.h"
 #include "viterator.h"
 
@@ -127,12 +126,6 @@ public:
 	{ append(value); return *this; }
     VVector<T> &operator<<(const VVector<T> &other)
 	{ return operator+=(other); }
-    friend std::ostream &operator<<(std::ostream &os, const VVector<T> &vec)
-    {
-	for(int i=0; i<vec.d->size; i++)
-	    os << vec.d->data[i] << ' ';
-	return os;
-    }
 
 private:
     void reallocData(int nsize);
