@@ -76,15 +76,13 @@ public:
     inline vreal dx() const { return _p2.x() - _p1.x(); }
     inline vreal dy() const { return _p2.y() - _p1.y(); }
 
-    vreal angle() const;
-    vreal angleTo(const VLineF &line) const;
     vreal length() const;
 
     inline bool isNull() const { return _p1.isNull() && _p2.isNull(); }
 
     inline void setP1(const VPointF &p1) { _p1 = p1; }
     inline void setP2(const VPointF &p2) { _p2 = p2; }
-    void setLine(vreal x1, vreal y2, vreal x2, vreal y2);
+    void setLine(vreal x1, vreal y1, vreal x2, vreal y2);
     void setPoints(const VPointF &p1, const VPointF &p2);
 
     inline VLine toLine() const { return VLine(_p1.toPoint(), _p2.toPoint()); }

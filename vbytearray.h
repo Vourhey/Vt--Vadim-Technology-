@@ -70,6 +70,11 @@ public:
     bool endsWith(const char *str) const;
     bool endsWith(char ch) const;
 
+    bool startsWith(const VByteArray &ba) const
+	{ return startsWith(ba.d->str); }
+    bool startsWith(const char *str) const;
+    bool startsWith(char ch) const;
+
     VByteArray &fill(char ch, int size = -1);
 
     int indexOf(const VByteArray &ba, int from = 0) const
@@ -95,7 +100,15 @@ public:
     int length() const { return d->size; }
     int size() const   { return d->size; }
 
+#ifndef VT_NO_CAST_FROM_BYTEARRAY
+    operator const char *() const { return d->str; }
+    operator const void *() const { return d->str; }
+#endif
+
     VByteArray toBase64() const;
+
+    VByteArray &remove(int pos, int len);
+    VByteArray repeated(int times) const;
 
     // STL
     // NR: дописать inline
@@ -106,6 +119,32 @@ public:
     void push_front(const char *str)         { prepend(str); }
     void push_front(char ch)                 { prepend(ch); }
     // END STL
+    
+    // operators
+    bool operator!=(const VByteArray &str) const
+	{ return vstrcmp(str.d->str, d->str); }
+    bool operator==(const VByteArray &str) const
+	{ return !vstrcmp(str.d->str, d->str); }
+    bool operator<(const VByteArray &str) const
+	{ return vstrcmp(str.d->str, d->str) < 0; }
+    bool operator<=(const VByteArray &str) const
+	{ return vstrcmp(str.d->str, d->str) <= 0; }
+    bool operator>(const VByteArray &str) const
+	{ return vstrcmp(str.d->str, d->str) > 0; }
+    bool operator>=(const VByteArray &str) const
+	{ return vstrcmp(str.d->str, d->str) >= 0; }
+
+    // NR: добавить проверку на выход за границы
+    // Написать класс VByteRef представляющий собой
+    // вспомагательный класс для представления char&.
+    char &operator[](int i) { return d->str[i]; }
+    char operator[](int i) const { return d->str[i]; }
+    char &operator[](uint i) { return d->str[i]; }
+    char operator[](uint i) const { return d->str[i]; }
+
+    VByteArray &operator+=(const VByteArray &ba) { return append(ba); }
+    VByteArray &operator+=(const char *str) { return append(str); }
+    VByteArray &operator+=(char ch) { return append(ch); }
 
 private:
     VByteArray(int size, char _f = ' ');

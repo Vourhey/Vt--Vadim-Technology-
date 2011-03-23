@@ -143,21 +143,34 @@ void VByteArray::reallocData(int size)
     {
 	d = (Data*)malloc(sizeof(Data) + size);
 	d->str = d->array;
-	d->size = d->alloc = size;
+	d->size = 0;
+	d->alloc = size;
 	d->str[0] = '\0';
     }
     else if(size > d->alloc)
     {
 	Data *x = (Data*)malloc(sizeof(Data) + size);
 	x->str = x->array;
-	x->size = x->alloc = size;
+	x->alloc = size;
 	memcpy(x->str, d->str, d->size);
+	x->size = d->size;
 	free(d);
 	d = x;
     }
     else
 	d->size = size;
 }
+
+/*!
+ * \class VByteArray
+ */
+
+/*!
+ * \def VT_NO_CAST_FROM_BYTEARRAY
+ * \relates VByteArray
+ * Отменяет автоматическое преобразование в \c const \c char \c *
+ * и \c const \c char \c *.
+ */
 
 VByteArray::VByteArray()
 {
@@ -170,6 +183,7 @@ VByteArray::VByteArray(const char *str)
 {
     d = 0;
     reallocData(vstrlen(str));
+    d->size = vstrlen(str);
     memcpy(d->str, str, d->size);
     d->str[d->size] = '\0';
     d->isNull = false;
@@ -180,6 +194,7 @@ VByteArray::VByteArray(const char *data, int size)
     d = 0;
     reallocData(size + 1);
     memcpy(d->str, data, size);
+    d->size = size+1;
     d->str[d->size] = '\0';
     d->isNull = false;
 }
@@ -188,6 +203,7 @@ VByteArray::VByteArray(const VByteArray &other)
 {
     d = 0;
     reallocData(other.d->size+1);
+    d->size = other.d->size + 1;
     memcpy(d->str, other.d->str, other.d->size);
     d->str[d->size] = '\0';
     d->isNull = false;
@@ -276,6 +292,7 @@ VByteArray &VByteArray::fill(char ch, int size)
 {
     if(size == -1) size = d->size;
     reallocData(size);
+    d->size = size;
 
     for(int i = 0; i<d->size; i++)
 	d->str[i] = ch;
@@ -404,5 +421,34 @@ VByteArray VByteArray::toBase64() const
 	else *out++ = alphabit[m];
     }
 
+    return tmp;
+}
+
+bool VByteArray::startsWith(const char *str) const
+{
+    return !vstrncmp(d->str, str, vstrlen(str));
+}
+
+bool VByteArray::startsWith(char ch) const
+{
+    return d->str[0] == ch;
+}
+
+VByteArray &VByteArray::remove(int pos, int len)
+{
+    memmove(d->str+pos, d->str+pos+len, d->size-pos-len);
+    reallocData(d->size-len);
+    d->str[d->size] = '\0';
+    return *this;
+}
+
+VByteArray VByteArray::repeated(int times) const
+{
+    VByteArray tmp(times * d->size);
+
+    while(times--)
+	tmp.append(d->str);
+
+    tmp.d->str[tmp.d->size] = '\0';
     return tmp;
 }
