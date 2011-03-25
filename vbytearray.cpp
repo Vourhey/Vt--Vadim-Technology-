@@ -145,7 +145,6 @@ void VByteArray::reallocData(int size)
 	d->str = d->array;
 	d->size = 0;
 	d->alloc = size;
-	d->str[0] = '\0';
     }
     else if(size > d->alloc)
     {
@@ -157,8 +156,6 @@ void VByteArray::reallocData(int size)
 	free(d);
 	d = x;
     }
-    else
-	d->size = size;
 }
 
 /*!
@@ -176,6 +173,7 @@ VByteArray::VByteArray()
 {
     d = 0;
     reallocData(0);
+    d->size = 0;
     d->isNull = true;
 }
 
@@ -209,10 +207,10 @@ VByteArray::VByteArray(const VByteArray &other)
     d->isNull = false;
 }
 
-VByteArray::VByteArray(int size, char _f)
+VByteArray::VByteArray(int size)
 {
     d = 0;
-    fill(_f, size);
+    reallocData(size);
     d->isNull = false;
 }
 
@@ -223,16 +221,17 @@ VByteArray::~VByteArray()
 
 VByteArray &VByteArray::append(const char *str, int len)
 {
-    int olds = d->size;
     reallocData(d->size + len);
-    memcpy(d->str+olds, str, len);
+    memcpy(d->str+d->size, str, len);
+    d->size += len;
     d->str[d->size] = '\0';
     return *this;
 }
 
 VByteArray &VByteArray::append(char ch)
 {
-    reallocData(d->size + 1);
+    ++d->size;
+    reallocData(d->size);
     d->str[d->size-1] = ch;
     d->str[d->size] = '\0';
     return *this;
@@ -324,7 +323,7 @@ VByteArray &VByteArray::insert(int i, const char *str, int len)
 {
     int olds = d->size;
     reallocData(d->size + len);
-
+    d->size += len;
     memmove(d->str+i+len, d->str+i, olds-i);
     memcpy(d->str+i, str, len);
     d->str[d->size] = '\0';
@@ -334,7 +333,8 @@ VByteArray &VByteArray::insert(int i, const char *str, int len)
 
 VByteArray &VByteArray::insert(int i, char ch)
 {
-    reallocData(d->size + 1);
+    d->size++;
+    reallocData(d->size);
 
     memmove(d->str+i+1, d->str+i, d->size-i-1);
     d->str[i] = ch;
@@ -369,6 +369,7 @@ int VByteArray::lastIndexOf(char ch, int from) const
 VByteArray &VByteArray::prepend(const char *str, int len)
 {
     reallocData(d->size + len);
+    d->size += len;
     memmove(d->str+len, d->str, d->size-len);
     memcpy(d->str, str, len);
     d->str[d->size] = '\0';
@@ -377,7 +378,8 @@ VByteArray &VByteArray::prepend(const char *str, int len)
 
 VByteArray &VByteArray::prepend(char ch)
 {
-    reallocData(d->size + 1);
+    d->size++;
+    reallocData(d->size);
     memmove(d->str+1, d->str, d->size-1);
     d->str[0] = ch;
     d->str[d->size] = '\0';
@@ -438,6 +440,7 @@ VByteArray &VByteArray::remove(int pos, int len)
 {
     memmove(d->str+pos, d->str+pos+len, d->size-pos-len);
     reallocData(d->size-len);
+    d->size -= len;
     d->str[d->size] = '\0';
     return *this;
 }

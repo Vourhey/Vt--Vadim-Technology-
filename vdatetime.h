@@ -33,18 +33,28 @@ public:
     bool operator!=(const VTime &t) const
 	{ return t.dms != dms; }
     bool operator<(const VTime &t) const
-	{ return t.dms < dms; }
+	{ return dms < t.dms; }
     bool operator<=(const VTime &t) const
-	{ return t.dms <= dms; }
+	{ return dms <= t.dms; }
     bool operator==(const VTime &t) const
 	{ return t.dms == dms; }
     bool operator>(const VTime &t) const
-	{ return t.dms > dms; }
+	{ return dms > t.dms; }
     bool operator>=(const VTime &t) const
-	{ return t.dms >= dms; }
+	{ return dms >= t.dms; }
 
 private:
     int dms;
 };
+
+#include <iostream>
+inline std::ostream &operator<<(std::ostream &os, const VTime &t)
+{
+    os << "Hour: " << t.hour() 
+       << " Minute: " << t.minute() 
+       << " Second: " << t.second() 
+       << " MSecs: " << t.msec() << '\n';
+    return os;
+}
 
 #endif

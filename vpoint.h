@@ -90,4 +90,16 @@ private:
     vreal _y;
 };
 
+#include <iostream>
+inline std::ostream &operator<<(std::ostream &os, const VPoint &p)
+{
+    os << "VPoint(" << p.x() << "," << p.y() << ")";
+    return os;
+}
+inline std::ostream &operator<<(std::ostream &os, const VPointF &p)
+{
+    os << "VPoint(" << p.x() << "," << p.y() << ")";
+    return os;
+}
+
 #endif

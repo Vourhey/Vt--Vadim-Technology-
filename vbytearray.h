@@ -100,7 +100,7 @@ public:
     int length() const { return d->size; }
     int size() const   { return d->size; }
 
-#ifndef VT_NO_CAST_FROM_BYTEARRAY
+#if  !defined(VT_NO_CAST_FROM_BYTEARRAY)
     operator const char *() const { return d->str; }
     operator const void *() const { return d->str; }
 #endif
@@ -147,7 +147,7 @@ public:
     VByteArray &operator+=(char ch) { return append(ch); }
 
 private:
-    VByteArray(int size, char _f = ' ');
+    VByteArray(int size);
 
     struct Data
     {

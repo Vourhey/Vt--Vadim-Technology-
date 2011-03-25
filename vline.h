@@ -7,7 +7,7 @@
 class VLine
 {
 public:
-    inline VLine();
+    inline VLine() : _p1(VPoint()), _p2(VPoint()) {}
     inline VLine(const VPoint &p1, const VPoint &p2) : _p1(p1), _p2(p2) {}
     inline VLine(int x1, int y1, int x2, int y2) : _p1(x1, y1), _p2(x2, y2) {}
 
@@ -20,7 +20,7 @@ public:
     inline int y2() const { return _p2.y(); }
 
     inline int dx() const { return _p2.x() - _p1.x(); }
-    inline int dy() const { return _p2.y() - _p2.y(); }
+    inline int dy() const { return _p2.y() - _p1.y(); }
 
     inline bool isNull() const { return _p1.isNull() && _p2.isNull(); }
 
@@ -57,7 +57,7 @@ private:
 class VLineF
 {
 public:
-    inline VLineF() {}
+    inline VLineF() : _p1(VPoint()), _p2(VPoint()) {}
     inline VLineF(const VPointF &p1, const VPointF &p2)
 	: _p1(p1), _p2(p2) {}
     inline VLineF(vreal x1, vreal y1, vreal x2, vreal y2)

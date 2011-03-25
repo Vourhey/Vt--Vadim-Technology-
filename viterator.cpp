@@ -401,3 +401,176 @@
  * \fn VMutableVectorIterator &VMutableVectorIterator::operator=(VVector<T> &vector)
  * \copydoc VVectorIterator::operator=()
  */
+/*!
+ * \fn VLinkedListIterator::VLinkedListIterator(const VLinkedList<T> &list)
+ * Создает итератор для \a list. Утератор устанавливает на начало списка 
+ * (до первого элемента).
+ * \see operator=()
+ */
+/*!
+ * \fn bool VLinkedListIterator::findNext(const T &value)
+ * Ищит \a value начиная с текущей позиции и до конца. Возвращает \c true,
+ * если значение найдено. Иначе \c false. После вызова, если \a value
+ * найдено, итератор устанавливается на элемент после найденого.
+ * Иначе на конец контейнера.
+ * \see findPrevious()
+ */
+/*!
+ * \fn bool VLinkedListIterator::findPrevious(const T &value)
+ * Ищит \a value начиная с текущей позиции и до начала. Возвращает \c true,
+ * если значение найдено. Иначе \c false. После вызова, если \a value
+ * найдено, итератор устанавливается на элемент до найденого. Иначе
+ * на начало контейнера.
+ * \see findNext()
+ */
+/*!
+ * \fn bool VLinkedListIterator::hasNext() const
+ * Возвращает \c true, если есть хотя бы один элемент после этого.
+ * То есть итератор не установлен на конец контейнера. Иначе \c false.
+ * \see hasPrevious() и next()
+ */
+/*!
+ * \fn bool VLinkedListIterator::hasPrevious() const
+ * Возвращает \c true, если есть хотя бы один элемент до этого.
+ * То есть итератор не установлен на начало контейнера. Иначе \c false.
+ * \see hasNext() и previous()
+ */
+/*!
+ * \fn const T &VLinkedListIterator::next()
+ * Возвращает следующий элемент и передвигает итератор на одну позицию.
+ * Вызов этой функции для итератора, установленного на конец контейнера,
+ * не определен.
+ * \see hasNext(), peekNext() и previous()
+ */
+/*!
+ * \fn const T &VLinkedListIterator::peekNext() const
+ * Возвращает следующий элемент без смещения итератора.
+ * Вызов этой функции для итератора, установленного на конец контейнера,
+ * не определен.
+ * \see hasNext(), next() и peekPrevious()
+ */
+/*!
+ * \fn const T &VLinkedListIterator::peekPrevious() const
+ * Возвращает предыдущий элемент без смещения итератора.
+ * Вызов этой функции для итератора, установленного на начало
+ * контейнера, не определен.
+ * \see hasPrevious(), previous() и peekNext()
+ */
+/*!
+ * \fn const T &VLinkedListIterator::previous()
+ * Возвращает предыдущий элемент и передвигает итератор на одну
+ * позицию назад. Вызов этой функции для итератора, установленного
+ * на начало контейнера, не определен.
+ * \see hasPrevious(), peekPrevious() и next()
+ */
+/*!
+ * \fn void VLinkedListIterator::toBack()
+ * Устанавливает итератор на конец контейнера (после последнего элемента).
+ * \see toFront() и previous()
+ */
+/*!
+ * \fn void VLinkedListIterator::toFront()
+ * Устанавливает итератор на начало контейнера (перед первым элементом).
+ * \see toBack() и next()
+ */
+/*!
+ * \fn VLinkedListIterator &VLinkedListIterator::operator=(const VLinkedList<T> &list)
+ * Назначает этому итератору \a list. Итератор устанавливается на начало контейнера.
+ * \see toFront() и toBack()
+ */
+/*!
+ * \fn VMutableLinkedListIterator::VMutableLinkedListIterator(VLinkedList<T> &list)
+ * Создает итератор для \a list. Итаратор устанавливается на начало 
+ * контейнера (до первого элемента).
+ * \see operator=()
+ */
+/*!
+ * \fn bool VMutableLinkedListIterator::findNext(const T &value)
+ * \copydoc VLinkedListIterator::findNext()
+ */
+/*!
+ * \fn bool VMutableLinkedListIterator::findPrevious(const T &value)
+ * \copydoc VLinkedListIterator::findPrevious()
+ */
+/*!
+ * \fn bool VMutableLinkedListIterator::hasNext() const
+ * \copydoc VLinkedListIterator::hasNext()
+ */
+/*!
+ * \fn bool VMutableLinkedListIterator::hasPrevious() const
+ * \copydoc VLinkedListIterator::hasPrevious()
+ */
+/*!
+ * \fn void VMutableLinkedListIterator::insert(const T &value)
+ * Вставляет \a value в текущую позицию. После вызова, итератор
+ * устанавливается после вставленного элемента.
+ * \see remove() и setValue()
+ */
+/*!
+ * \fn T &VMutableLinkedListIterator::next()
+ * \copydoc VLinkedListIterator::next()
+ */
+/*!
+ * \fn T &VMutableLinkedListIterator::peekNext() const
+ * \copydoc VLinkedListIterator::peekNext()
+ */
+/*!
+ * \fn T &VMutableLinkedListIterator::peekPrevious() const
+ * \copydoc VLinkedListIterator::peekPrevious()
+ */
+/*!
+ * \fn T &VMutableLinkedListIterator::previous()
+ * \copydoc VLinkedListIterator::previous()
+ */
+/*!
+ * \fn void VMutableLinkedListIterator::remove()
+ * Удаляет элемент, который был получен после вызова 
+ * функций: next(), previous(), findNext() и findPrevious().\n
+ * Пример:
+ * \code
+ * VMutableLinkedListIterator<int> i(list);
+ * while(i.hasNext())
+ * {
+ *     int val = i.next();
+ *     if(val < -32768 || val > 32767)
+ *         i.remove();
+ * }
+ * \endcode
+ * \see insert() и setValue()
+ */
+/*!
+ * \fn void VMutableLinkedListIterator::setValue(const T &value) const
+ * Заменяет последний полученный элемент на \a value.\nПример:
+ * \code
+ * VMutableLinkedListIterator<double> i(list);
+ * while(i.hasNext())
+ * {
+ *     double val = i.next();
+ *     i.setValue(sqrt(val));
+ * }
+ * \endcode
+ * \see value(), remove() и insert()
+ */
+/*!
+ * \fn void VMutableLinkedListIterator::toBack()
+ * \copydoc VLinkedListIterator::toBack()
+ */
+/*!
+ * \fn void VMutableLinkedListIterator::toFront()
+ * \copydoc VLinkedListIterator::toFront()
+ */
+/*!
+ * \fn const T &VMutableLinkedListIterator::value() const
+ * Возвращает значение элемента, который последний был получен
+ * через функции next(), previous(), findNext() и findPrevious().
+ * \see setValue()
+ */
+/*!
+ * \fn T &VMutableLinkedListIterator::value()
+ * \overload
+ */
+/*!
+ * \fn VMutableLinkedListIterator &VMutableLinkedListIterator::operator=(VLinkedList<T> &list)
+ * Назначает этому итератору \a list. Итератор устанавливается на начало контейнера.
+ * \see toFront() и toBack()
+ */

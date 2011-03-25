@@ -216,14 +216,12 @@ void VLinkedList<T>::append(const T &value)
 template<class T>
 void VLinkedList<T>::clear()
 {
-    Node *n = _end->nextNode;
-    while(n != _end)
+    while(_size--)
     {
-	Node *tmp = n;
-	n = n->nextNode;
+	Node *tmp = _end;
+	_end = _end->nextNode;
 	delete tmp;
     }
-    _size = 0;
 }
 
 template<class T>
@@ -301,9 +299,9 @@ void VLinkedList<T>::removeFirst()
 template<class T>
 void VLinkedList<T>::removeLast()
 {
-    Node *n = _end;
-    _end = n->prevNode;
-    _end->nextNode = n->nextNode;
+    Node *n = _end->prevNode;
+    _end->prevNode = n->prevNode;
+    n->nextNode = _end;
     --_size;
     delete n;
 }
@@ -311,7 +309,7 @@ void VLinkedList<T>::removeLast()
 template<class T>
 bool VLinkedList<T>::removeOne(const T &value)
 {
-    Node *n = _end->next;
+    Node *n = _end->nextNode;
     while(n != _end)
     {
 	if(n->value == value)
@@ -340,7 +338,7 @@ T VLinkedList<T>::takeFirst()
 template<class T>
 T VLinkedList<T>::takeLast()
 {
-    T t = _end->value;
+    T t = _end->prevNode->value;
     removeLast();
     return t;
 }

@@ -54,8 +54,7 @@ public:
     const T &first() const { return at(0); }
 
     int indexOf(const T &value, int from = 0) const;
-    void insert(int i, const T &value)
-	{ insert(i, 1, value); }
+    void insert(int i, const T &value) { insert(i, 1, value); }
     void insert(int i, int count, const T &value);
     bool isEmpty() const { return !d->size; }
 
@@ -68,16 +67,12 @@ public:
 
     void remove(int i);
     void remove(int i, int count);
-    void replace(int i, const T &value)
-	{ d->data[i] = value; }
-    void reserve(int size)
-	{ reallocData(size); }
-    void resize(int size)
-	{ reallocData(size); }
+    void replace(int i, const T &value) { d->data[i] = value; }
+    void reserve(int size) { reallocData(size); }
+    void resize(int size) { reallocData(size); }
 
     int size() const { return d->size; }
-    bool startsWith(const T &value) const
-	{ return (d->data[0] == value); }
+    bool startsWith(const T &value) const { return (d->data[0] == value); }
 
     T value(int i) const { return value(i, T()); }
     T value(int i, const T &defaultValue) const
@@ -120,10 +115,8 @@ public:
     VVector<T> operator+(const VVector<T> &other) const
 	{ VVector<T> ret = *this; ret += other; return ret; }
     VVector<T> &operator+=(const VVector<T> &other);
-    VVector<T> &operator+=(const T &value)
-	{ append(value); return *this; }
-    VVector<T> &operator<<(const T &value)
-	{ append(value); return *this; }
+    VVector<T> &operator+=(const T &value) { append(value); return *this; }
+    VVector<T> &operator<<(const T &value) { append(value); return *this; }
     VVector<T> &operator<<(const VVector<T> &other)
 	{ return operator+=(other); }
 

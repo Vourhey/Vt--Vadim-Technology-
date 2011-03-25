@@ -33,7 +33,7 @@ const int MSECS_PER_DAY = 86400000;
  * \see isNull()
  */
 VTime::VTime()
-    : dms(-1)
+    : dms(0)
 {}
 
 /*!
@@ -44,6 +44,7 @@ VTime::VTime()
  */
 VTime::VTime(int h, int m, int s, int ms)
 {
+    dms = 0;
     setHMS(h, m, s, ms);
 }
 
@@ -131,7 +132,7 @@ int VTime::hour() const
  */
 bool VTime::isNull() const
 {
-    return (dms == -1);
+    return (dms == 0);
 }
 
 /*!

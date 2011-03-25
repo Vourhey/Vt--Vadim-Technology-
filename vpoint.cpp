@@ -222,16 +222,121 @@ bool operator==(const VPoint &p1, const VPoint &p2)
     return (p1._x == p2._x) && (p1._y == p2._y);
 }
 
+/*!
+ * \class VPointF
+ * \brief Определяет точку на плоскости, используя вещественные числа.
+ *
+ * Точка определяется двумя координатами \c x и \c y, которые можно получить
+ * через функции x() и y(). Координаты выражаются в вещественных числах.
+ * Функция isNull() возвращает \c true, если обе координаты установлены в 0.
+ * Задать координаты можно функциями setX(), setY() или rx() и ry(). Последние
+ * возвращает ссылку.
+ *
+ * Задать точку можно следующим образом:
+ * \code
+ * VPointF p;
+ *
+ * p.setX(p.x() + 1.0);
+ * p += VPointF(1.0, 0.0);
+ * p.rx()++;
+ * \endcode
+ *
+ * Точки можно складывать и вычитать (координаты 
+ * складываются/вычитаются соответственно). Можно умножать или делать на
+ * целое (\c int) или дробное (\c vreal) число.
+ *
+ * Из VPointF можно получить челочисленную копию VPoint, вызвав toPoint().
+ * Каждая координата округляется. Наконец, VPointF можно сравнивать
+ * и передавать в функции.
+ * \see VPoint
+ */
+/*!
+ * \fn VPointF::VPointF()
+ * Созюает нулевую точку, т.е. с координатами (0.0, 0.0).
+ * \see isNull()
+ */
+/*!
+ * \fn VPointF::VPointF(const VPoint &point)
+ * Создает копию из \a point.
+ * \see toPoint()
+ */
+/*!
+ * \fn VPointF::VPointF(vreal x, vreal y)
+ * Создает точку с координатами (\a x, \a y).
+ * \see setX() и setY()
+ */
+/*!
+ * \fn vreal &VPointF::rx()
+ * Возвращает ссылку на координату \c x.\n
+ * Использовании ссылки позволяет напрямую менять \c x:
+ * \code
+ * VPointF p(1.1, 2.5);
+ * p.rx()--; // p станет (0.1, 2.5)
+ * \endcode
+ * \see x() и setX()
+ */
+/*!
+ * \fn vreal &VPointF::ry()
+ * Возвращает ссылку на координату \c y.\n
+ * Использовании ссылки позволяет напрямую менять \c y:
+ * \code
+ * VPointF p(1.1, 2.5);
+ * p.ry()++; // p станет (1.1, 3.5)
+ * \endcode
+ * \see y() и setY()
+ */
+/*!
+ * \fn void VPointF::setX(vreal x)
+ * Устанавливает координату \c x в \a x.
+ * \see x() и setY()
+ */
+/*!
+ * \fn void VPointF::setY(vreal y)
+ * Устанавливает координату \c y в \a y.
+ * \see y() и setX()
+ */
+/*!
+ * \fn VPoint VPointF::toPoint() const
+ * Округляет координаты до целого и возвращает результат как VPoint.
+ * \see VPointF()
+ */
+/*!
+ * \fn vreal VPointF::x() const
+ * Возвращает \c x координату.
+ * \see setX() и rx()
+ */
+/*!
+ * \fn vreal VPointF::y() const
+ * Возвращает \c y координату.
+ * \see setY() и ry()
+ */
+
+/*!
+ * Возвращает \c true, если обе координаты установлены в 0.
+ * Иначе \c false.
+ */
 bool VPointF::isNull() const
 {
     return (_x == 0.0) && (_y == 0.0);
 }
 
+/*!
+ * Возвращает сумму абсолютных занчений \c x и \c y.
+ * \see VPoint::manhattanLength()
+ */
 vreal VPointF::manhattanLength() const
 {
     return vAbs(_x) + vAbs(_y);
 }
 
+/*!
+ * Умножает координаты точки на \a factor и возвращает ссылку:
+ * \code
+ * VPointF p(-1.1, 4.1);
+ * p *= 2.5;   // p станет (-2.75, 10.25)
+ * \endcode
+ * \see operator/=()
+ */
 VPointF &VPointF::operator*=(vreal factor)
 {
     _x *= factor;
@@ -239,6 +344,15 @@ VPointF &VPointF::operator*=(vreal factor)
     return *this;
 }
 
+/*!
+ * Складывает соответствующие координаты этой точки с точкой \a point:
+ * \code
+ * VPointF p(3.1, 7.1);
+ * VPointF q(-1.0, 4.1);
+ * p += q; // p станет (2.1, 11.2)
+ * \endcode
+ * \see operator-=()
+ */
 VPointF &VPointF::operator+=(const VPointF &point)
 {
     _x += point._x;
@@ -246,6 +360,15 @@ VPointF &VPointF::operator+=(const VPointF &point)
     return *this;
 }
 
+/*!
+ * Вычитает из координат этой точки координаты \a point:
+ * \code
+ * VPointF p(3.1, 7.1);
+ * VPointF q(-1.0, 4.1);
+ * p -= q; // p станет (4.1, 3.0)
+ * \endcode
+ * \see operator+=()
+ */
 VPointF &VPointF::operator-=(const VPointF &point)
 {
     _x -= point._x;
@@ -253,6 +376,14 @@ VPointF &VPointF::operator-=(const VPointF &point)
     return *this;
 }
 
+/*!
+ * Делит координаты этой точки на \a divisor и возвращает ссылку:
+ * \code
+ * VPointF p(-2.75, 10.25);
+ * p /= 2.5;   // p станет (-1.1, 4.1)
+ * \endcode
+ * \see operator*=()
+ */
 VPointF &VPointF::operator/=(vreal divisor)
 {
     if(!divisor) return *this; // делить на ноль нельзя
@@ -262,6 +393,50 @@ VPointF &VPointF::operator/=(vreal divisor)
     return *this;
 }
 
+/*!
+ * \fn bool operator!=(const VPointF &p1, const VPointF &p2)
+ * \relates VPointF
+ * Возвращает \c true, если \a p1 не равна \a p2. Иначе \c false.
+ */
+/*!
+ * \fn const VPointF operator*(const VPointF &point, vreal factor)
+ * \relates VPointF
+ * Возвращает копию \a point, умноженную на \a factor.
+ * \see VPointF::operator*=()
+ */
+/*!
+ * \fn const VPointF operator*(vreal factor, const VPointF &point)
+ * \relates VPointF
+ * \overload
+ */
+/*!
+ * \fn const VPointF operator+(const VPointF &p1, const VPointF &p2)
+ * \relates VPointF
+ * Возвращает сумму \a p1 и \a p2.
+ * \see VPointF::operator+=()
+ */
+/*!
+ * \fn const VPointF operator-(const VPointF &p1, const VPointF &p2)
+ * \relates VPointF
+ * Возвращает разность между \a p1 и \a p2.
+ * \see VPointF::operator-=()
+ */
+/*!
+ * \fn const VPointF operator-(const VPointF &point)
+ * \relates VPointF
+ * Возвращает копию \a point с противоположными значениями координат.
+ */
+/*!
+ * \fn const VPointF operator/(const VPointF &point, vreal divisor)
+ * \relates VPointF
+ * Возвращает копию \a point, координаты которой поделены на \a divisor.
+ * \see VPointF::operator/=()
+ */
+
+/*!
+ * \relates VPointF
+ * Возвращает \c true, если \a p1 равна \a p2. Иначе \c false.
+ */
 bool operator==(const VPointF &p1, const VPointF &p2)
 {
     return (p1._x == p2._x) && (p1._y == p2._y);
