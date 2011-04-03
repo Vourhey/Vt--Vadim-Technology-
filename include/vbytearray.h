@@ -100,15 +100,50 @@ public:
     int length() const { return d->size; }
     int size() const   { return d->size; }
 
-#if  !defined(VT_NO_CAST_FROM_BYTEARRAY)
-    operator const char *() const { return d->str; }
-    operator const void *() const { return d->str; }
+#ifndef VT_NO_CAST_FROM_BYTEARRAY
+    inline operator const char *() const { return d->str; }
+    inline operator const void *() const { return d->str; }
 #endif
 
     VByteArray toBase64() const;
 
     VByteArray &remove(int pos, int len);
     VByteArray repeated(int times) const;
+
+    VByteArray &replace(int pos, int len, const VByteArray &after)
+	{ return replace(pos, len, after.d->str, after.d->size); }
+    VByteArray &replace(int pos, int len, const char *after)
+	{ return replace(pos, len, after, vstrlen(after)); }
+    VByteArray &replace(int pos, int len, const char *after, int alen);
+    VByteArray &replace(const VByteArray &before, const VByteArray &after)
+	{ return replace(before.d->str, before.d->size, after.d->str, after.d->size); }
+    VByteArray &replace(const char *before, const VByteArray &after)
+	{ return replace(before, vstrlen(before), after.d->str, after.d->size); }
+    VByteArray &replace(const VByteArray &before, const char *after)
+	{ return replace(before.d->str, before.d->size, after, vstrlen(after)); }
+    VByteArray &replace(const char *before, const char *after)
+	{ return replace(before, vstrlen(before), after, vstrlen(after)); }
+    VByteArray &replace(const char *before, int bsize, const char *after, int asize);
+    VByteArray &replace(char before, const VByteArray &after);
+    VByteArray &replace(char before, const char *after);
+    VByteArray &replace(char before, char after);
+
+    void reserve(int size) { reallocData(size); }
+    void resize(int size)  { reallocData(size); }
+
+    VByteArray &setNum(int n, int base = 10)
+	{ return setNum(vlonglong(n), base); }
+    VByteArray &setNum(uint n, int base = 10)
+	{ return setNum(vulonglong(n), base); }
+    VByteArray &setNum(short n, int base = 10)
+	{ return setNum(vlonglong(n), base); }
+    VByteArray &setNum(ushort n, int base = 10)
+	{ return setNum(vulonglong(n), base); }
+    VByteArray &setNum(vlonglong n, int base = 10);
+    VByteArray &setNum(vulonglong n, int base = 10);
+    VByteArray &setNum(double n, int prec = 6);
+    VByteArray &setNum(float n, int prec = 6)
+	{ return setNum(double(n), prec); }
 
     // STL
     // NR: дописать inline
@@ -145,6 +180,74 @@ public:
     VByteArray &operator+=(const VByteArray &ba) { return append(ba); }
     VByteArray &operator+=(const char *str) { return append(str); }
     VByteArray &operator+=(char ch) { return append(ch); }
+
+    friend bool operator!=(const VByteArray &a1, const char *a2)
+	{ return vstrcmp(a1.d->str, a2); }
+    friend bool operator!=(const char *a1, const VByteArray &a2)
+	{ return vstrcmp(a1, a2.d->str); }
+    friend bool operator==(const VByteArray &a1, const char *a2)
+	{ return !vstrcmp(a1.d->str, a2); }
+    friend bool operator==(const char *a1, const VByteArray &a2)
+	{ return !vstrcmp(a1, a2.d->str); }
+    friend bool operator<(const VByteArray &a1, const char *a2)
+	{ return vstrcmp(a1.d->str, a2) < 0; }
+    friend bool operator<(const char *a1, const VByteArray &a2)
+	{ return vstrcmp(a1, a2.d->str) < 0; }
+    friend bool operator<=(const VByteArray &a1, const char *a2)
+	{ return vstrcmp(a1.d->str, a2) <= 0; }
+    friend bool operator<=(const char *a1, const VByteArray &a2)
+	{ return vstrcmp(a1, a2.d->str) <= 0; }
+    friend bool operator>(const VByteArray &a1, const char *a2)
+	{ return vstrcmp(a1.d->str, a2) > 0; }
+    friend bool operator>(const char *a1, const VByteArray &a2)
+	{ return vstrcmp(a1, a2.d->str) > 0; }
+    friend bool operator>=(const VByteArray &a1, const char *a2)
+	{ return vstrcmp(a1.d->str, a2) >= 0; }
+    friend bool operator>=(const char *a1, const VByteArray &a2)
+	{ return vstrcmp(a1, a2.d->str) >= 0; }
+
+    friend const VByteArray operator+(const VByteArray &a1, const VByteArray &a2)
+    {
+	VByteArray ret; ret.reserve(a1.d->size + a2.d->size);
+	ret.append(a1); ret.append(a2);
+	return ret;
+    }
+    friend const VByteArray operator+(const VByteArray &a1, const char *a2)
+    {
+	VByteArray ret; ret.reserve(a1.d->size+vstrlen(a2));
+	ret.append(a1); ret.append(a2);
+	return ret;
+    }
+    friend const VByteArray operator+(const char *a1, const VByteArray &a2)
+    {
+	VByteArray ret; ret.reserve(vstrlen(a1)+a2.d->size);
+	ret.append(a1); ret.append(a2);
+	return ret;
+    }
+    friend const VByteArray operator+(const VByteArray &a1, char a2)
+    {
+	VByteArray ret; ret.reserve(a1.d->size+1);
+	ret.append(a1); ret.append(a2);
+	return ret;
+    }
+    friend const VByteArray operator+(char a1, const VByteArray &a2)
+    {
+	VByteArray ret; ret.reserve(1+a2.d->size);
+	ret.append(a1); ret.append(a2);
+	return ret;
+    }
+
+    // static
+    static VByteArray number(int n, int base = 10)
+	{ return VByteArray().setNum(n, base); }
+    static VByteArray number(uint n, int base = 10)
+	{ return VByteArray().setNum(n, base); }
+    static VByteArray number(vlonglong n, int base = 10)
+	{ return VByteArray().setNum(n, base); }
+    static VByteArray number(vulonglong n, int base = 10)
+	{ return VByteArray().setNum(n, base); }
+    static VByteArray number(double n, int prec = 6)
+        { return VByteArray().setNum(n, prec); }
 
 private:
     VByteArray(int size);

@@ -1,5 +1,6 @@
 #include <cstring>
 #include <cctype>
+#include <cstdlib>
 #include "vbytearray.h"
 
 int vstrcmp(const char *str1, const char *str2)
@@ -61,7 +62,7 @@ int vstrnicmp(const char *str1, const char *str2, uint len)
 
     if(l1 != l2) return l1 - l2;
 
-    for(int i = 0; i<len; i++)
+    for(uint i = 0; i<len; i++)
     {
 	char c1 = toupper(str1[i]);
 	char c2 = toupper(str2[i]);
@@ -72,7 +73,7 @@ int vstrnicmp(const char *str1, const char *str2, uint len)
 
 uint vstrnlen(const char *str, uint maxlen)
 {
-    int len = vstrlen(str);
+    uint len = vstrlen(str);
     if(len > maxlen) return maxlen;
     return len;
 }
@@ -300,15 +301,17 @@ VByteArray &VByteArray::fill(char ch, int size)
     return *this;
 }
 
+int indexOf_helper(const char *ba, int size, const char *str, int len, int from)
+{
+    for(int i = from; i<size; i++)
+	if(!vstrncmp(ba+i, str, len))
+	    return i;
+    return -1;
+}
+
 int VByteArray::indexOf(const char *str, int from) const
 {
-    int l = vstrlen(str);
-
-    for(int i = from; i < d->size; i++)
-	if(!vstrncmp(d->str+i, str, l))
-	    return i;
-
-    return -1;
+    return indexOf_helper(d->str, d->size, str, vstrlen(str), from);
 }
 
 int VByteArray::indexOf(char ch, int from) const
@@ -454,4 +457,128 @@ VByteArray VByteArray::repeated(int times) const
 
     tmp.d->str[tmp.d->size] = '\0';
     return tmp;
+}
+
+VByteArray &VByteArray::replace(int pos, int len, const char *after, int alen)
+{
+    int old = d->size;
+    d->size = d->size - len + alen;
+    reallocData(d->size);
+
+    memmove(d->str+pos+alen, d->str+pos+len, old-pos-len);
+    memcpy(d->str+pos, after, alen);
+    d->str[d->size] = '\0';
+    return *this;
+}
+
+VByteArray &VByteArray::replace(const char *before, int bsize, const char *after, int asize)
+{
+    int pos = indexOf_helper(d->str, d->size, before, bsize, 0);
+
+    if(pos == -1) return *this;
+
+    return replace(pos, bsize, after, asize);
+}
+
+VByteArray &VByteArray::replace(char before, const VByteArray &after)
+{
+    int pos = indexOf(before);
+    if(pos == -1) return *this;
+    return replace(pos, 1, after.d->str, after.d->size);
+}
+
+VByteArray &VByteArray::replace(char before, const char *after)
+{
+    int pos = indexOf(before);
+
+    if(pos == -1) return *this;
+    
+    return replace(pos, 1, after, vstrlen(after));
+}
+
+VByteArray &VByteArray::replace(char before, char after)
+{
+    int pos = indexOf(before);
+    if(pos == -1) return *this;
+    d->str[pos] = after;
+    return *this;
+}
+
+VByteArray &VByteArray::setNum(vulonglong n, int base)
+{
+    char buf[65];
+    char *p = buf + 65;
+
+    if(base < 2 || base > 36)
+    {
+	vWarning("VByteArray::setNum(): base не может быть %d", base);
+	base = 10;	
+    }
+
+    if(base == 10)
+    {
+	while(n != 0)
+	{
+	    int c = n % 10;
+	    *(--p) = '0' + c;
+	    n /= 10;
+	}
+    }
+    else
+    {
+	while(n != 0)
+	{
+	    int c = n % base;
+	    --p;
+
+	    if(c < 10) *p = c + '0';
+	    else *p = c - 10 + 'a';
+
+	    n /= base;
+	}
+    }
+
+    clear();
+    int size = 65 - int(p-buf);
+    reallocData(size);
+    d->size = size;
+    for(int i=0; i<d->size; i++)
+	d->str[i] = p[i];
+
+    return *this;
+}
+
+VByteArray &VByteArray::setNum(vlonglong n, int base)
+{
+    bool negativ = n < 0;
+    setNum(vulonglong(vAbs(n)), base);
+    if(negativ) prepend('-');
+    return *this;
+}
+
+VByteArray &VByteArray::setNum(double n, int prec)
+{
+    int decpt;
+    int sign;
+
+    char *s = fcvt(n, prec, &decpt, &sign);
+
+    clear();
+    int size = vstrlen(s) + 3;
+    reallocData(size); // 3 символа на запятую, знак и ноль
+    d->size = size;
+
+    int i = 0;
+    if(sign > 0) d->str[i++] = '-';
+    if(decpt < 0) { d->str[i++] = 0; decpt = 0; }
+
+    memcpy(d->str+i, s, decpt);
+    i += decpt;
+    d->str[i++] = '.';
+    s += decpt;
+    while(*s)
+	d->str[i++] = *s++;
+    d->str[i] = '\0';
+    d->size = i;
+    return *this;
 }

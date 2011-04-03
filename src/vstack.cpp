@@ -95,7 +95,7 @@
  */
 /*!
  * \typedef VVector::const_iterator
- * Синоним в стиле STL для константного итератора для VVecotr и VStakc.
+ * Синоним в стиле STL для константного итератора для VVector и VStakc.
  * VVector в равной степени поддерживает STL интераторы и Java 
  * итераторы. В случае STL итераторов константный итератор всего лишь
  * синоним для "const T *"
@@ -103,33 +103,33 @@
  */
 /*!
  * \typedef VVector::const_pointer
- * Синоним для const T *. Нужно для совместимости с STL
+ * Синоним для const T *. \stl
  */
 /*!
  * \typedef VVector::const_reference
- * Синоним для T &. Нужно для совместимости с STL
+ * Синоним для T &. \stl
  */
 /*!
  * \typedef VVector::iterator
  * Синоним для не константного STL итератора.
  * В общем смысле это синоним для "T *"
- * \see VVecotr::begin(), VVector::end(), VVecotr::const_iterator
+ * \see VVector::begin(), VVector::end(), VVector::const_iterator
  */
 /*!
  * \typedef VVector::pointer
- * Синоним для T *
+ * Синоним для T *. \stl
  */
 /*!
  * \typedef VVector::reference
- * Синоним для T &
+ * Синоним для T &. \stl
  */
 /*!
  * \typedef VVector::size_type
- * Синоним для int. Нужен для совместимости с STL
+ * Синоним для int. \stl
  */
 /*!
  * \typedef VVector::value_type
- * Синоним для T. Нужен для совместимости с STL
+ * Синоним для T. \stl
  */
 
 /*!

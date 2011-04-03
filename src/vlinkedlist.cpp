@@ -60,27 +60,27 @@
  */
 /*!
  * \typedef VLinkedList::const_pointer
- * Синоним для const T *. Для STL совместимости.
+ * Синоним для const T *. \stl
  */
 /*!
  * \typedef VLinkedList::const_reference
- * Синоним для const T &. Для STL совместимости.
+ * Синоним для const T &. \stl
  */
 /*!
  * \typedef VLinkedList::pointer
- * Синоним для T *. Для STL совместимости.
+ * Синоним для T *. \stl
  */
 /*!
  * \typedef VLinkedList::reference
- * Синоним для T &. Для STL совместимости.
+ * Синоним для T &. \stl
  */
 /*!
  * \typedef VLinkedList::size_type
- * Синоним для int. Для STL совместимости.
+ * Синоним для int. \stl
  */
 /*!
  * \typedef VLinkedList::value_type
- * Синоним для T. Для STL совместимости.
+ * Синоним для T. \stl
  */
 
 /*!
@@ -204,7 +204,7 @@
  */
 /*!
  * \fn T &VLinkedList::front()
- * Для STL совместимости. Равносильно first()
+ * \stl Равносильно first()
  */
 /*!
  * \fn const T &VLinkedList::front() const
@@ -234,11 +234,11 @@
  */
 /*!
  * \fn void VLinkedList::pop_back()
- * Для STL совместимости. Равносильно removeLast()
+ * \stl Равносильно removeLast()
  */
 /*!
  * \fn void VLinkedList::pop_front()
- * Для STL совместимости. Равносильно removeFirst()
+ * \stl Равносильно removeFirst()
  */
 /*!
  * \fn void VLinkedList::prepend(const T &value)
@@ -256,11 +256,11 @@
  */
 /*!
  * \fn void VLinkedList::push_back(const T &value)
- * Для STL совместимости. Равносильно append(\a value).
+ * \stl Равносильно append(\a value).
  */
 /*!
  * \fn void VLinkedList::push_front(const T &value)
- * Для STL совместимости. Равносильно prepend(\a value).
+ * \stl Равносильно prepend(\a value).
  */
 /*!
  * \fn int VLinkedList::removeAll(const T &value)

@@ -142,11 +142,7 @@ void VVector<T>::reallocData(int nsize)
 	d->data = d->array;
 	d->size = d->alloc = nsize;
     }
-    else if(nsize <= d->alloc)
-    {
-	d->size = nsize;
-    }
-    else // nsize > d->alloc; нужно больше памяти
+    else if(nsize > d->alloc) // нужно больше памяти
     {
 	Data *x = (Data*)malloc(sizeof(Data)+nsize*sizeof(T));
 	x->data = x->array;
@@ -171,6 +167,7 @@ VVector<T>::VVector(int size)
     if(size < 0) size = 0;
     d = 0;
     reallocData(size);
+    d->size = size;
 
     for(int i=0; i<size; i++) 
 	d->data[i] = T(); // default-value
@@ -182,6 +179,7 @@ VVector<T>::VVector(int size, const T &value)
     if(size < 0) size = 0;
     d = 0;
     reallocData(size);
+    d->size = size;
 
     for(int i=0; i<size; i++)
 	d->data[i] = value;
@@ -192,6 +190,7 @@ VVector<T>::VVector(const VVector<T> &other)
 {
     d = 0;
     reallocData(other.d->size);
+    d->size = other.d->size;
 
     // copy
     for(int i=0; i<d->size; i++)
@@ -209,6 +208,7 @@ template<class T>
 void VVector<T>::append(const T &value)
 {
     reallocData(d->size+1);
+    d->size++;
     d->data[d->size-1] = value;
 }
 
@@ -236,6 +236,7 @@ VVector<T> &VVector<T>::fill(const T &value, int size)
 {
     if(size == -1) size = d->size;
     reallocData(size);
+    d->size = size;
 
     for(int i=0; i<size; i++)
 	d->data[i] = value;
@@ -257,6 +258,7 @@ void VVector<T>::insert(int i, int count, const T &value)
 {
     if(count < 1) count = 1;
     reallocData(d->size+count);
+    d->size += count;
     ::memmove(d->data+i+count-1, d->data+i-1, (d->size-i)*sizeof(T));
     
     int j = i-1;
@@ -289,6 +291,7 @@ template<class T>
 void VVector<T>::prepend(const T &value)
 {
     reallocData(d->size+1);
+    d->size++;
     ::memmove(d->data+1, d->data, sizeof(T));
     d->data[0] = value;
 }
@@ -297,14 +300,14 @@ template<class T>
 void VVector<T>::remove(int i)
 {
     ::memmove(d->data+i, d->data+i+1, sizeof(T));
-    reallocData(d->size-1);
+    d->size--;
 }
 
 template<class T>
 void VVector<T>::remove(int i, int count)
 {
     ::memmove(d->data+i, d->data+i+count, sizeof(T)*count);
-    reallocData(d->size-count);
+    d->size -= count;
 }
 
 template<class T>
