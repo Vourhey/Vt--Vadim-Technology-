@@ -140,13 +140,15 @@ void VVector<T>::reallocData(int nsize)
     {
 	d = (Data*)malloc(sizeof(Data)+nsize*sizeof(T));
 	d->data = d->array;
-	d->size = d->alloc = nsize;
+	d->size = 0;
+	d->alloc = nsize;
     }
     else if(nsize > d->alloc) // нужно больше памяти
     {
 	Data *x = (Data*)malloc(sizeof(Data)+nsize*sizeof(T));
 	x->data = x->array;
-	x->size = x->alloc = nsize;
+	x->size = d->size;
+	x->alloc = nsize;
 
 	::memcpy(x->data, d->data, d->size*sizeof(T));
 	free(d);

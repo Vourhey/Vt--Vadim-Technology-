@@ -126,6 +126,7 @@ bool vEqual(InputIterator1 begin1, InputIterator1 end1, InputIterator2 begin2)
     return true;
 }
 
+/*! \cond */
 template<class T>
 class vGreater
 {
@@ -141,6 +142,7 @@ public:
     inline bool operator()(const T &t1, const T &t2) const
 	{ return (t1 < t2); }
 };
+/*! \endcond */
 
 template<class T>
 void vSwap(T &t1, T &t2)

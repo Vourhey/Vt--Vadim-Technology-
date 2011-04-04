@@ -28,10 +28,12 @@ typedef unsigned short         ushort;
 #define V_INT64_C(literal) literal ## LL
 #define V_UINT64_C(literal) literat ## UL 
 
+/*! \cond */
 // служенбный класс. Размер целого
 template<int> struct VIntegerSize {};
 template<> struct VIntegerSize<4> { typedef vint32 Signed; typedef vuint32 Unsigned; };
 template<> struct VIntegerSize<8> { typedef vint64 Signed; typedef vuint64 Unsigned; };
+/*! \endcond */
 
 typedef VIntegerSize<sizeof(void*)>::Signed   vptrdiff;
 typedef VIntegerSize<sizeof(void*)>::Unsigned vuintptr;

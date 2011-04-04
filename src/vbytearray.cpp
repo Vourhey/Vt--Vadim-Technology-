@@ -161,6 +161,10 @@ void VByteArray::reallocData(int size)
 
 /*!
  * \class VByteArray
+ * \brief Массив байтов
+ *
+ * Этот класс можно использовать как тип данных строка.
+ * Т.е. вместо \c const \c char \c *.
  */
 
 /*!
@@ -170,24 +174,33 @@ void VByteArray::reallocData(int size)
  * и \c const \c char \c *.
  */
 
+/*!
+ * Конструктор создает пустой массив
+ * \see isEmpty()
+ */
 VByteArray::VByteArray()
 {
     d = 0;
     reallocData(0);
     d->size = 0;
-    d->isNull = true;
 }
 
+/*!
+ * Создает массив из \a str. Создается точная копия строки.
+ */
 VByteArray::VByteArray(const char *str)
 {
     d = 0;
-    reallocData(vstrlen(str));
-    d->size = vstrlen(str);
+    int s = vstrlen(str);
+    reallocData(s);
+    d->size = s;
     memcpy(d->str, str, d->size);
     d->str[d->size] = '\0';
-    d->isNull = false;
 }
 
+/*!
+ * Создает массив, содержащий первые \a size байтов из \a data.
+ */
 VByteArray::VByteArray(const char *data, int size)
 {
     d = 0;
@@ -195,9 +208,11 @@ VByteArray::VByteArray(const char *data, int size)
     memcpy(d->str, data, size);
     d->size = size+1;
     d->str[d->size] = '\0';
-    d->isNull = false;
 }
 
+/*!
+ * Конструктор копий для \a other.
+ */
 VByteArray::VByteArray(const VByteArray &other)
 {
     d = 0;
@@ -205,16 +220,17 @@ VByteArray::VByteArray(const VByteArray &other)
     d->size = other.d->size + 1;
     memcpy(d->str, other.d->str, other.d->size);
     d->str[d->size] = '\0';
-    d->isNull = false;
 }
 
 VByteArray::VByteArray(int size)
 {
     d = 0;
     reallocData(size);
-    d->isNull = false;
 }
 
+/*!
+ * Деструктор
+ */
 VByteArray::~VByteArray()
 {
     free(d);

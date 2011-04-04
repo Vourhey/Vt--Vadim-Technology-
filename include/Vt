@@ -1,0 +1,22 @@
+#ifndef VT_HEADER
+#define VT_HEADER
+
+/* Главный заголовочный файл.
+   Подключает все существующие классы и функции  */
+
+#include "vglobal.h"
+#include "valgorithms.h"
+#include "vdatetime.h"
+#include "viterator.h"
+#include "vlinkedlist.h"
+#include "vpair.h"
+#include "vstack.h"
+#include "vbytearray.h"
+#include "vline.h"
+#include "vlist.h"
+#include "vqueue.h"
+#include "vpoint.h"
+#include "vsize.h"
+#include "vvector.h"
+
+#endif

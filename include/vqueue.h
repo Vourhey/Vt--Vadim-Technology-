@@ -10,10 +10,10 @@ public:
     inline VQueue() {}
     inline ~VQueue() {}
 
-    T dequeue() { return takeFirst(); }
-    void enqueue(const T &t) { append(t); }
-    T &head() { return first(); }
-    const T &head() const { return first(); }
+    T dequeue() { return VList<T>::takeFirst(); }
+    void enqueue(const T &t) { VList<T>::append(t); }
+    T &head() { return VList<T>::first(); }
+    const T &head() const { return VList<T>::first(); }
 };
 
 #endif

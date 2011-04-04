@@ -4,19 +4,19 @@
 
 /*!
  * \class VVectorIterator
- * \brief Класс реализует итератор в стиле Java для VVector и VStack
+ * \brief Класс реализует итератор в стиле Java для VVector и VStack.
  *
  * VVector в равной степени поддерживает итераторы в стиле Java и
  * в стиле STL. Итераторы в стиле Java имеют более высокий уровень
  * и проще в использовании чем STL итераторы. С другой стороны
- * они могут быть менее эфективными.
+ * они могут быть менее эффективными.
  *
  * Существует альтернативный метод - использование индекса. Многие
  * функции в VVector требуют в качестве параметра индекс элемента:
  * получение доступа, удаление и вставка.
  *
- * VVectorIterator<T> позволяет только перебрать VVector<T> (или VStack<T>).
- * Если вам нужно изменить содержимое, используйте VMutableVectorIterator<T>.
+ * VVectorIterator\<T\> позволяет только перебрать VVector\<T\> (или VStack\<T\>).
+ * Если вам нужно изменить содержимое, используйте VMutableVectorIterator\<T\>.
  *
  * VVectorIterator при создании принимает VVector в качестве параметра.
  * После этого итератор указывает на элемент перед первым.
@@ -51,17 +51,17 @@
  */
 /*!
  * \class VMutableVectorIterator
- * \brief Класс реализует неконстантный Java итератор для VVector и VStack
+ * \brief Класс реализует не константный Java итератор для VVector и VStack.
  *
  * VVector в равной степени поддерживает Java и STL итераторы. Java
  * итераторы более высокоуровневые и проще в использовании чем STL.
- * С другой стороны, они могут быть менее эфективными.
+ * С другой стороны, они могут быть менее эффективными.
  *
  * Альтернативный метод заключается в использовании индексов позиции.
  * Многие функции VVector принимают в качестве аргумента индекс
  * элемента: доступ к элементу, вставка, удаление и некоторые другие.
  *
- * VMutableVectorIterator<T> позволяет перебрать VVector<T> и изменять
+ * VMutableVectorIterator\<T\> позволяет перебрать VVector\<T\> и изменять
  * его. Если вам не требуется менять содержимое, то лучше использовать
  * VVectorIterator\<T\>.
  *
@@ -113,15 +113,15 @@
  */
 /*!
  * \class VLinkedListIterator
- * \brief Реализует константный Java итератор для VLinkedList
+ * \brief Реализует константный Java итератор для VLinkedList.
  *
  * VLinkedList в равной степени поддерживает Java и STL итераторы. Java
  * итераторы более высокоуровневы и проще в использовании. С другой стороны,
- * они могут быть менее эфективными.
+ * они могут быть менее эффективными.
  *
- * VLinkedListIterator<T> позволяет вам перебрать VLinkedList<T>. Если вам
+ * VLinkedListIterator\<T\> позволяет вам перебрать VLinkedList\<T\>. Если вам
  * требуется изменить содержимое контейнера, то используйте
- * VMutableLinkedListIterator<T>.
+ * VMutableLinkedListIterator\<T\>.
  *
  * Конструктор требует VLinkedList в качестве аргумента. После создания,
  * итератор устанавливается на начало списка (до первого элемента).
@@ -136,7 +136,7 @@
  * Функция next() возвращает следующий элемент и перемещает итератор.
  * В отличии от STL итераторов, Java итераторы указывают между реальными
  * элементами. Первый вызов next() возвращает первый элемент и 
- * устанавливает итератор между первым и вторым. Следущий вызов 
+ * устанавливает итератор между первым и вторым. Следующий вызов 
  * возвращает второй элемент и устанавливает итератор между вторым и 
  * третьим и так далее.
  * \image html javaiterators1.png
@@ -156,16 +156,16 @@
  */
 /*!
  * \class VMutableLinkedListIterator
- * \brief Реализует неконстантый Java итератор для VLinkedList
+ * \brief Реализует неконстантный Java итератор для VLinkedList.
  *
  * VLinkedList в равной степени поддерживает Java и STL итераторы.
  * Java итераторы более высокоуровневы и проще в использовании.
- * С другой стороны, они могут быть менее эфективными.
+ * С другой стороны, они могут быть менее эффективными.
  *
- * VMutableLinkedListIterator<T> позволяет вам перебрать VLinkedList<T>
+ * VMutableLinkedListIterator\<T\> позволяет вам перебрать VLinkedList\<T\>
  * и изменить содержимое. Если вам не нужно менять список (или имеется
- * только константый VLinkedList), используйте более быстрый
- * VLinkedListIterator<T>.
+ * только константный VLinkedList), используйте более быстрый
+ * VLinkedListIterator\<T\>.
  *
  * Конструктор требует VLinkedList в качестве аргумента. После создания
  * итератор устанавливается на начало списка (до первого элемента).
@@ -211,9 +211,112 @@
  * В примере все нулевые элементы удаляются, а отрицательные числа
  * заменяются на противоположные.\n
  * Только один изменяемый итератор может быть активным в любое время.
- * Кроме того, нельзя делать измененй списка непосредственно, а не через
+ * Кроме того, нельзя делать изменений списка непосредственно, а не через
  * итератор. Так как это приведет к неопределенному результату.
  * \see VLinkedListIterator и VLinkedList::iterator
+ */
+/*!
+ * \class VListIterator
+ * \brief Реализует константный Java итератор для VList и VQueue.
+ *
+ * VList в равной степени поддерживает Java и STL итераторы. Java
+ * итераторы более высокоуровневы и проще в использовании. С другой стороны,
+ * они могут быть менее эффективными.
+ *
+ * VListIterator\<T\> позволяет вам перебрать VList\<T\> (или VQueue\<T\>). Если вам
+ * требуется изменить содержимое контейнера, то используйте
+ * VMutableListIterator\<T\>.
+ *
+ * Конструктор требует VList в качестве аргумента. После создания,
+ * итератор устанавливается на начало списка (до первого элемента).
+ * Дальше показано как перебрать все элементы:
+ * \code
+ * VList<double> list;
+ * ...
+ * VListIterator<double> i(list);
+ * while(i.hasNext())
+ *     cout << i.next();
+ * \endcode
+ * Функция next() возвращает следующий элемент и перемещает итератор.
+ * В отличии от STL итераторов, Java итераторы указывают между реальными
+ * элементами. Первый вызов next() возвращает первый элемент и 
+ * устанавливает итератор между первым и вторым. Следующий вызов 
+ * возвращает второй элемент и устанавливает итератор между вторым и 
+ * третьим и так далее.
+ * \image html javaiterators1.png
+ * Дальше показано как перебрать все элементы в обратном порядке:
+ * \code
+ * VListIterator<double> i(list);
+ * i.toBack();
+ * while(i.hasPrevious())
+ *     cout << i.previous();
+ * \endcode
+ * Если вы хотите найти все вхождения элемента в список, то
+ * используйте findNext() или findPrevious() в цикле.\n
+ * Несколько итераторов могут быть использованы на один и тот же
+ * список. Если изменить список вне итератора, то VListIterator 
+ * будет продолжать перебирать оригинальный список, игнорируя изменения.
+ * \see VMutableListIterator и VList::const_iterator
+ */
+/*!
+ * \class VMutableListIterator
+ * \brief Реализует неконстантый Java итератор для VList и VQueue.
+ *
+ * VList в равной степени поддерживает Java и STL итераторы.
+ * Java итераторы более высокоуровневы и проще в использовании.
+ * С другой стороны, они могут быть менее эффективными.
+ *
+ * VMutableListIterator\<T\> позволяет вам перебрать VList\<T\> (или VQueue\<T\>)
+ * и изменить содержимое. Если вам не нужно менять список (или имеется
+ * только константный VList), используйте более быстрый VListIterator\<T\>.
+ *
+ * Конструктор требует VList в качестве аргумента. После создания
+ * итератор устанавливается на начало списка (до первого элемента).
+ * Дальше показано, как перебрать все элементы списка:
+ * \code
+ * VList<double> list;
+ * ...
+ * VMutableListIterator<double> i(list);
+ * while(i.hasNext())
+ *     cout << i.next();
+ * \endcode
+ * Функция next() возвращает следующий элемент и перемещает итератор.
+ * В отличии от STL итераторов, Java итераторы указывают на позицию
+ * между элементами. Первый вызов next() возвращает первый элемент
+ * и устанавливает итератор между первым и вторым. Второй вызов
+ * возвращает второй элемент и перемещает итератор на позицию
+ * между вторым и третьим. И так далее.
+ * \image html javaiterators1.png
+ * Дальше показано, как перебрать список в обратном порядке:
+ * \code
+ * VMutableListIterator<double> i(list);
+ * i.toBack();
+ * while(i.hasPrevious())
+ *     cout << i.previous();
+ * \endcode
+ * Если вы хотите найти все вхождения элемента в список, используйте
+ * findNext() и findPrevious() в цикле.\n
+ * Если вы хотите удалить текущий элемент, используйте remove().
+ * Для изменения значения - setValue(). Если хотите вставить элемент,
+ * используйте insert().\n
+ * Пример:
+ * \code
+ * VMutableListIterator<int> i(list);
+ * while(i.hasNext())
+ * {
+ *     int val = i.next();
+ *     if(val < 0)
+ *         i.setValue(-val);
+ *     else if(val == 0)
+ *         i.remove();
+ * }
+ * \endcode
+ * В примере все нулевые элементы удаляются, а отрицательные числа
+ * заменяются на противоположные.\n
+ * Только один изменяемый итератор может быть активным в любое время.
+ * Кроме того, нельзя делать изменений списка непосредственно, а не через
+ * итератор. Так как это приведет к неопределенному результату.
+ * \see VListIterator и VList::iterator
  */
 
 /*!
@@ -233,7 +336,7 @@
  */
 /*!
  * \fn bool VVectorIterator::findPrevious(const T &value)
- * Ищит \a value начиная с текущей позиции в обратном порядке. Возвращаетa \c true
+ * Ищит \a value начиная с текущей позиции в обратном порядке. Возвращает \c true
  * если элемент найден. Иначе \c false.
  *
  * После вызова, если элемент найден, итератор устанавливается на элемент до
@@ -275,7 +378,7 @@
  */
 /*!
  * \fn void VVectorIterator::toBack()
- * Перемещает итератор в конец конетейнера (после последнего)
+ * Перемещает итератор в конец контейнера (после последнего)
  * \see toFront() и previous()
  */
 /*!
@@ -295,8 +398,8 @@
  */
 /*!
  * \fn bool VMutableVectorIterator::findNext(const T &value)
- * Ищит \a value начиная с текущей позии и до конца. Возвращает \c true
- * есил элемент найден. Иначе \c false.
+ * Ищит \a value начиная с текущей позиции и до конца. Возвращает \c true
+ * если элемент найден. Иначе \c false.
  *
  * После вызова, если \a value найден, итератор устанавливается на 
  * позицию после элемента. Иначе итератор устанавливается на конец
@@ -305,7 +408,7 @@
  */
 /*!
  * \fn bool VMutableVectorIterator::findPrevious(const T &value)
- * Ищит \a value начиная с текущей позиции в обратном порядке. Возвращаетa \c true
+ * Ищит \a value начиная с текущей позиции в обратном порядке. Возвращает \c true
  * если элемент найден. Иначе \c false.
  * 
  * После вызова, если элемент найден, итератор устанавливается на позицию до
@@ -390,7 +493,7 @@
 /*!
  * \fn const T &VMutableVectorIterator::value() const
  * Возвращает значение элемента, который был получен после вызова
- * функци обхода (next(), previous(), findNext() или findPrevious()).
+ * функции обхода (next(), previous(), findNext() или findPrevious()).
  * \see setValue()
  */
 /*!
@@ -403,7 +506,7 @@
  */
 /*!
  * \fn VLinkedListIterator::VLinkedListIterator(const VLinkedList<T> &list)
- * Создает итератор для \a list. Утератор устанавливает на начало списка 
+ * Создает итератор для \a list. Итератор устанавливает на начало списка 
  * (до первого элемента).
  * \see operator=()
  */
@@ -411,7 +514,7 @@
  * \fn bool VLinkedListIterator::findNext(const T &value)
  * Ищит \a value начиная с текущей позиции и до конца. Возвращает \c true,
  * если значение найдено. Иначе \c false. После вызова, если \a value
- * найдено, итератор устанавливается на элемент после найденого.
+ * найдено, итератор устанавливается на элемент после найденного.
  * Иначе на конец контейнера.
  * \see findPrevious()
  */
@@ -419,7 +522,7 @@
  * \fn bool VLinkedListIterator::findPrevious(const T &value)
  * Ищит \a value начиная с текущей позиции и до начала. Возвращает \c true,
  * если значение найдено. Иначе \c false. После вызова, если \a value
- * найдено, итератор устанавливается на элемент до найденого. Иначе
+ * найдено, итератор устанавливается на элемент до найденного. Иначе
  * на начало контейнера.
  * \see findNext()
  */
@@ -480,7 +583,7 @@
  */
 /*!
  * \fn VMutableLinkedListIterator::VMutableLinkedListIterator(VLinkedList<T> &list)
- * Создает итератор для \a list. Итаратор устанавливается на начало 
+ * Создает итератор для \a list. Итератор устанавливается на начало 
  * контейнера (до первого элемента).
  * \see operator=()
  */
@@ -571,6 +674,179 @@
  */
 /*!
  * \fn VMutableLinkedListIterator &VMutableLinkedListIterator::operator=(VLinkedList<T> &list)
+ * Назначает этому итератору \a list. Итератор устанавливается на начало контейнера.
+ * \see toFront() и toBack()
+ */
+/*!
+ * \fn VListIterator::VListIterator(const VList<T> &list)
+ * Создает итератор для \a list. Итератор устанавливает на начало списка 
+ * (до первого элемента).
+ * \see operator=()
+ */
+/*!
+ * \fn bool VListIterator::findNext(const T &value)
+ * Ищит \a value начиная с текущей позиции и до конца. Возвращает \c true,
+ * если значение найдено. Иначе \c false. После вызова, если \a value
+ * найдено, итератор устанавливается на элемент после найденного.
+ * Иначе на конец контейнера.
+ * \see findPrevious()
+ */
+/*!
+ * \fn bool VListIterator::findPrevious(const T &value)
+ * Ищит \a value начиная с текущей позиции и до начала. Возвращает \c true,
+ * если значение найдено. Иначе \c false. После вызова, если \a value
+ * найдено, итератор устанавливается на элемент до найденного. Иначе
+ * на начало контейнера.
+ * \see findNext()
+ */
+/*!
+ * \fn bool VListIterator::hasNext() const
+ * Возвращает \c true, если есть хотя бы один элемент после этого.
+ * То есть итератор не установлен на конец контейнера. Иначе \c false.
+ * \see hasPrevious() и next()
+ */
+/*!
+ * \fn bool VListIterator::hasPrevious() const
+ * Возвращает \c true, если есть хотя бы один элемент до этого.
+ * То есть итератор не установлен на начало контейнера. Иначе \c false.
+ * \see hasNext() и previous()
+ */
+/*!
+ * \fn const T &VListIterator::next()
+ * Возвращает следующий элемент и передвигает итератор на одну позицию.
+ * Вызов этой функции для итератора, установленного на конец контейнера,
+ * не определен.
+ * \see hasNext(), peekNext() и previous()
+ */
+/*!
+ * \fn const T &VListIterator::peekNext() const
+ * Возвращает следующий элемент без смещения итератора.
+ * Вызов этой функции для итератора, установленного на конец контейнера,
+ * не определен.
+ * \see hasNext(), next() и peekPrevious()
+ */
+/*!
+ * \fn const T &VListIterator::peekPrevious() const
+ * Возвращает предыдущий элемент без смещения итератора.
+ * Вызов этой функции для итератора, установленного на начало
+ * контейнера, не определен.
+ * \see hasPrevious(), previous() и peekNext()
+ */
+/*!
+ * \fn const T &VListIterator::previous()
+ * Возвращает предыдущий элемент и передвигает итератор на одну
+ * позицию назад. Вызов этой функции для итератора, установленного
+ * на начало контейнера, не определен.
+ * \see hasPrevious(), peekPrevious() и next()
+ */
+/*!
+ * \fn void VListIterator::toBack()
+ * Устанавливает итератор на конец контейнера (после последнего элемента).
+ * \see toFront() и previous()
+ */
+/*!
+ * \fn void VListIterator::toFront()
+ * Устанавливает итератор на начало контейнера (перед первым элементом).
+ * \see toBack() и next()
+ */
+/*!
+ * \fn VListIterator &VListIterator::operator=(const VList<T> &list)
+ * Назначает этому итератору \a list. Итератор устанавливается на начало контейнера.
+ * \see toFront() и toBack()
+ */
+/*!
+ * \fn VMutableListIterator::VMutableListIterator(VList<T> &list)
+ * Создает итератор для \a list. Итератор устанавливается на начало 
+ * контейнера (до первого элемента).
+ * \see operator=()
+ */
+/*!
+ * \fn bool VMutableListIterator::findNext(const T &value)
+ * \copydoc VLinkedListIterator::findNext()
+ */
+/*!
+ * \fn bool VMutableListIterator::findPrevious(const T &value)
+ * \copydoc VLinkedListIterator::findPrevious()
+ */
+/*!
+ * \fn bool VMutableListIterator::hasNext() const
+ * \copydoc VLinkedListIterator::hasNext()
+ */
+/*!
+ * \fn bool VMutableListIterator::hasPrevious() const
+ * \copydoc VLinkedListIterator::hasPrevious()
+ */
+/*!
+ * \fn void VMutableListIterator::insert(const T &value)
+ * Вставляет \a value в текущую позицию. После вызова, итератор
+ * устанавливается после вставленного элемента.
+ * \see remove() и setValue()
+ */
+/*!
+ * \fn T &VMutableListIterator::next()
+ * \copydoc VLinkedListIterator::next()
+ */
+/*!
+ * \fn T &VMutableListIterator::peekNext() const
+ * \copydoc VLinkedListIterator::peekNext()
+ */
+/*!
+ * \fn T &VMutableListIterator::peekPrevious() const
+ * \copydoc VLinkedListIterator::peekPrevious()
+ */
+/*!
+ * \fn T &VMutableListIterator::previous()
+ * \copydoc VLinkedListIterator::previous()
+ */
+/*!
+ * \fn void VMutableListIterator::remove()
+ * Удаляет элемент, который был получен после вызова 
+ * функций: next(), previous(), findNext() и findPrevious().\n
+ * Пример:
+ * \code
+ * VMutableListIterator<int> i(list);
+ * while(i.hasNext())
+ * {
+ *     int val = i.next();
+ *     if(val < -32768 || val > 32767)
+ *         i.remove();
+ * }
+ * \endcode
+ * \see insert() и setValue()
+ */
+/*!
+ * \fn void VMutableListIterator::setValue(const T &value) const
+ * Заменяет последний полученный элемент на \a value.\nПример:
+ * \code
+ * VMutableListIterator<double> i(list);
+ * while(i.hasNext())
+ * {
+ *     double val = i.next();
+ *     i.setValue(sqrt(val));
+ * }
+ * \endcode
+ * \see value(), remove() и insert()
+ */
+/*!
+ * \fn void VMutableListIterator::toBack()
+ * \copydoc VLinkedListIterator::toBack()
+ */
+/*!
+ * \fn void VMutableListIterator::toFront()
+ * \copydoc VLinkedListIterator::toFront()
+ */
+/*!
+ * \fn const T &VMutableListIterator::value() const
+ * Возвращает значение элемента, который последний был получен
+ * через функции next(), previous(), findNext() и findPrevious().
+ * \see setValue()
+ */
+/*!
+ * \fn T &VMutableListIterator::value()
+ * \overload
+ */
+/*!
+ * \fn VMutableListIterator &VMutableListIterator::operator=(VList<T> &list)
  * Назначает этому итератору \a list. Итератор устанавливается на начало контейнера.
  * \see toFront() и toBack()
  */

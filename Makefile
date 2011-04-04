@@ -61,11 +61,11 @@ $(OUT_DIR)/vglobal.o: src/vglobal.cpp include/vglobal.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) src/vglobal.cpp -o $(OUT_DIR)/vglobal.o
 
 test: $(TARGET) main.cpp
-	$(CXX) main.cpp $(TARGET) $(INCPATH) -o test
+	$(CXX) $(CXXFLAGS) main.cpp $(TARGET) $(INCPATH) -o test
 
 doc: Doxyfile $(HEADERS) $(SOURCES)
 	doxygen Doxyfile
 
 clean:
-	rm -r .obj/
+	rm $(OBJECTS) 
 

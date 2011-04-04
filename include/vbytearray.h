@@ -90,7 +90,6 @@ public:
     VByteArray &insert(int i, char ch);
 
     bool isEmpty() const { return d->size == 0; }
-    bool isNull() const { return d->isNull; }
 
     int lastIndexOf(const VByteArray &ba, int from = -1) const
 	{ return lastIndexOf(ba.d->str, from); }
@@ -256,7 +255,6 @@ private:
     {
 	int size;
 	int alloc;
-	bool isNull;
 	char *str;
 	char array[1];
     };

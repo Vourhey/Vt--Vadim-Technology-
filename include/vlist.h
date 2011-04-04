@@ -108,7 +108,7 @@ public:
 	Node *i;
 
 	iterator() : i(0) {}
-	iterator(const iterator *other) : i(other.i) {}
+	iterator(const iterator &other) : i(other.i) {}
 	iterator(Node *n) : i(n) {}
 	bool operator!=(const iterator &other) const { return i != other.i; }
 	bool operator!=(const const_iterator &other) const { return i != other.i; }
@@ -118,7 +118,7 @@ public:
 	iterator operator++(int) { Node *n = i; i++; return n; }
 	iterator &operator+=(int j) { i += j; return *this; }
 	iterator operator-(int j) const { return i - j; }
-	int operator-(iterator other) { return int(i - other.i); }
+	int operator-(iterator other) const { return int(i - other.i); }
 	iterator &operator--() { --i; return *this; }
 	iterator operator--(int) { Node *n = i; --i; return n; }
 	iterator &operator-=(int j) { i -= j; return *this; }

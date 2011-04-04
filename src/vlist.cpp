@@ -8,7 +8,7 @@
  * VQueue<T> один из классов-контейнеров библиотеки Vt. Он позволяет
  * хранить данные любого типа.
  *
- * Очередь работает по принципу певый вошел, первый вышел (FIFO).
+ * Очередь работает по принципу первый вошел, первый вышел (FIFO).
  * Элементы добавляются в конец очереди, использую enqueue(),
  * и удаляются с головы, используя dequeue(). Функция head()
  * возвращает головной элемент без удаления.
@@ -261,23 +261,203 @@
  * Тип данных должен поддерживать оператор operator==().
  * \see lastIndexOf() и contains()
  */
+/*!
+ * \fn void VList::insert(int i, const T &value)
+ * Вставляет \a value в позицию \a i. \n Пример:
+ * \code
+ * VList<VByteArray> list;
+ * list << "alpha" << "beta" << "delta";
+ * list.insert(2, "gamma");
+ * // list: ["alpha", "beta", "gamma", "delta"]
+ * \endcode
+ * \see append(), prepend(), replace() и removeAt()
+ */
+/*!
+ * \fn iterator VList::insert(iterator before, const T &value)
+ * \overload \n
+ * Вставляет \a value до элемента на который указывает \a before.
+ * Возвращает итератор на вставленный элемент.
+ */
+/*!
+ * \fn bool VList::isEmpty() const
+ * Возвращает \c true, если список пуст. Иначе \c false.
+ * \see size()
+ */
+/*!
+ * \fn T &VList::last()
+ * Возвращает ссылку на последний элемент. Список не должен быть пустым.
+ * \see first() и isEmpty()
+ */
+/*!
+ * \fn const T &VList::last() const
+ * \overload
+ */
+/*!
+ * \fn int VList::lastIndexOf(const T &value, int from = -1) const
+ * Возвращает позицию последнего вхождения \a value в список.
+ * Поиск производится в обратном порядке начиная с \a from. Если
+ * \a from равна -1 (по умолчанию), то поиск производится с конца.\n
+ * Пример:
+ * \code
+ * VList<char> list;
+ * list << 'a' << 'b' << 'c' << 'b' << 'a';
+ * list.lastIndexOf('b');      // returns 3
+ * list.lastIndexOf('b', 3);   // returns 3
+ * list.lastIndexOf('b', 2);   // returns 1
+ * list.lastIndexOf('x');      // returns -1
+ * \endcode
+ * Функция требует, чтобы тип данных поддерживал operator==().
+ * \see indexOf()
+ */
+/*!
+ * \fn int VList::length() const
+ * Равносильно count() и size().
+ * \see count().
+ */
+/*!
+ * \fn VList<T> VList::mid(int pos, int length = -1) const
+ * Возвращает список, который содержит элементы из этого списка
+ * начиная с \a pos. Если \a length равна -1 (по умолчанию), то
+ * все элементы после \a pos копируются в новый список.
+ * Иначе только \a length элементов будут добавлены в конечный список.
+ */
+/*!
+ * \fn void VList::pop_back()
+ * \stl Равносильно removeLast().
+ */
+/*!
+ * \fn void VList::pop_front()
+ * \stl Равносильно removeFirst().
+ */
+/*!
+ * \fn void VList::prepend(const T &value)
+ * Вставляет \a value в начало списка.\n Пример:
+ * \code
+ * VList<VByteArray> list;
+ * list.prepend("one");
+ * list.prepend("two");
+ * list.prepend("three");
+ * // list: ["three", "two", "one"]
+ * \endcode
+ * Того же эфекта можно добиться через list.insert(0, \a value).
+ * \see append() и insert().
+ */
+/*!
+ * \fn void VList::push_back(const T &value)
+ * \stl Равносильно append(\a value).
+ */
+/*!
+ * \fn void VList::push_front(const T &value)
+ * \stl Равносильно prepend(\a value).
+ */
+/*!
+ * \fn int VList::removeAll(const T &value)
+ * Удаляет все вхождения \a value в список и возвращает 
+ * число удаленных.\n Пример:
+ * \code
+ * VList<VByteArray> list;
+ * list << "sun" << "cloud" << "sun" << "rain";
+ * list.removeAll("sun");   // return 2
+ * // list: ["cloud", "rain"]
+ * \endcode
+ * Функция требует, чтобы тип данных поддерживал operator==().
+ * \see removeOne(), removeAt(), takeAt()
+ */
+/*!
+ * \fn void VList::removeAt(int i)
+ * Удаляет элемент с позиции \a i. \a i должна быть в пределах списка
+ * (т.е. 0 <= \a i < size()).
+ * \see takeAt(), removeFirst(), removeLast() и removeOne().
+ */
+/*!
+ * \fn void VList::removeFirst()
+ * Удаляет первый элемент из списка. Это равносильно вызову removeAt(0).
+ * \see removeAt() и takeFirst()
+ */
+/*!
+ * \fn void VList::removeLast()
+ * Удаляет последний элемент из списка. Равносильно вызову removeAt(size()-1).
+ * \see removeAt() и takeLast().
+ */
+/*!
+ * \fn bool VList::removeOne(const T &value)
+ * Удаляет первое вхождение \a value и возвращает \c true в случае успеха.
+ * Иначе \c false. \n Пример:
+ * \code
+ * VList<VByteArray> list;
+ * list << "sun" << "cloud" << "sun" << "rain";
+ * list.removeOne("sun");
+ * // list: ["cloud", "sun", "rain"]
+ * \endcode
+ * Функция требует, чтобы тип данных поддерживал operator==().
+ * \see removeAll(), removeAt() и takeAt().
+ */
+/*!
+ * \fn void VList::reserve(int alloc)
+ * Резервирует память под \a alloc элементов.\n
+ * Функция нужна для точного контроля над памятью. Так же это может
+ * быть полезно, если вы заранее знаете сколько элементов будет в списке.
+ */
+/*!
+ * \fn int VList::size() const
+ * Возвращает число элементов в списке.
+ * \see isEmpty() и count()
+ */
+/*!
+ * \fn bool VList::startsWith(const T &value) const
+ * Возвращает \c true, если список начинается на \a value.
+ * Иначе \c false.
+ * \see isEmpty() и contains().
+ */
+/*!
+ * \fn T VList::takeAt(int i)
+ * Удаляет элемент с позиции \a i и возвращает его.
+ * Если вам дальше не понадобится этот элемент, removeAt()
+ * будет более эффективна.
+ * \see removeAt(), takeFirst() и takeLast()
+ */
+/*!
+ * \fn T VList::takeFirst()
+ * Удаляет первый элемент и возвращает его. Равносильно takeAt(0).
+ * Если вы не используете полученный элемент, removeFirst() более
+ * эффективная функция.
+ * \see takeLast(), takeAt() и removeFirst()
+ */
+/*!
+ * \fn T VList::takeLast()
+ * Удаляет последний элемент и возвращает его. Равносильно takeAt(size()-1).
+ * Если вы не используете полученный элемент, removeLast() более
+ * эффективная функция.
+ * \see takeFirst(), takeAt() и removeLast()
+ */
+/*!
+ * \fn T VList::value(int i) const
+ * Возвращает элемент с позиции \a i.
+ * Если \a i находится вне списка, то возвращает значение по умолчанию.
+ * \see at() и operator[]()
+ */
+/*!
+ * \fn T VList::value(int i, const T &defaultValue) const
+ * \overload \n
+ * Если \a i вне списка, возвращается \a defaultValue.
+ */
 
 /*!
  * \class VList::const_iterator
  * \brief Реализует константный STL итератор для VList и VQueue
  *
  * VList в равной степени поддерживает STL и Java итераторы. STL итераторы
- * более низкоуровневы и менее интуитивны в использовании. С другой
+ * более низкоуровневые и менее интуитивны в использовании. С другой
  * стороны они могут оказаться быстрее и более подходящими для
  * разработчиков, знакомых с STL.
  *
  * VList<T>::const_iterator позволяет вам перебрать VList<T> (или VQueue<T>).
  * Если вам нужно изменить список, то используйте VList::iterator. В общем,
- * хорошая практика использовать VList::const_iterator для неконстантного
+ * хорошая практика использовать VList::const_iterator для не константного
  * VList, если вы собираетесь только получить значения элементов.
  * Константный итератор так же делает ваш код более безопасным.
  *
- * По умолчанию конструктор VList::const_iterator создает неинициализированный
+ * По умолчанию конструктор VList::const_iterator создает не инициализированный
  * итератор. Вы должны назначить контейнер этому итератор, используя
  * VList::constBegin(), VList::constEnd() или VList::insert() до того, как
  * начнете перебирать элементы. Дальше показан обычный проход всего контейнера:
@@ -294,14 +474,14 @@
  *     cout << *i << ' ';
  * \endcode
  *
- * Большинство фукнций VList позволяют использовать индексы вместо итераторов.
+ * Большинство функций VList позволяют использовать индексы вместо итераторов.
  * Одно место, где STL итераторы незаменимы - это общие алгоритмы (добавить ссылку).
  * \code
  * VList<char *> list;
  * ...
  * vDeleteAll(list.constBegin(), list.constEnd());
  * \endcode
- * Сразу несолько константных итераторов могут указывать на один и тот же контейнер.
+ * Сразу несколько константных итераторов могут указывать на один и тот же контейнер.
  * Однако, только один изменяемый итератор можно использовать в одно время.
  * Если вам нужно перебирать элементы долгий период времени, рекомендуем
  * воспользоваться VLinkedList.
@@ -315,7 +495,7 @@
  */
 /*!
  * \fn VList::const_iterator::const_iterator()
- * Создает неинициализированный итератор.\n
+ * Создает не инициализированный итератор.\n
  * Функции operator*() и operator++() нельзя вызывать для такого итератора.
  * Используйте \c operator=() чтобы назначить контейнер.
  * \see VList::constBegin() и VList::constEnd()
@@ -341,7 +521,7 @@
  */
 /*!
  * \fn const_iterator VList::const_iterator::operator+(int j) const
- * Возвращает итератор, указываеющий на элемент через \a j позиций от текущего.
+ * Возвращает итератор, указывающий на элемент через \a j позиций от текущего.
  * \see operator-() и operator+=()
  */
 /*!
@@ -359,7 +539,7 @@
  */
 /*!
  * \fn const_iterator &VList::const_iterator::operator+=(int j)
- * Смещает итератор на \a j позиций вперед (или назад, если \a j отрицительна)
+ * Смещает итератор на \a j позиций вперед (или назад, если \a j отрицательна)
  * \see operator-=() и operator+()
  */
 /*!
@@ -420,5 +600,192 @@
 /*!
  * \fn const T &VList::const_iterator::operator[](int j) const
  * Возвращает элемент с позиции *this + \a j.
+ * \see operator+()
+ */
+
+/*!
+ * \class VList::iterator
+ * \brief STL итератор для VList и VQueue.
+ *
+ * VList в равной степени поддерживает STL и Java итераторы. 
+ * Итераторы STL более низкого уровня и более громоздки в использовании.
+ * С другой стороны, они могут быть быстрее и более удобными для
+ * разработчиков, знакомых с STL.
+ *
+ * VList<T>::iterator позволяет вам перебрать VList<T> (или VQueue<T>) 
+ * и изменить содержимое списка. Если вам нужно только получить элементы
+ * или у вас имеется константный список, то лучше использовать
+ * VList::const_iterator. В общем случае, хорошая практика использовать
+ * VList::const_iterator и для не константного списка. Это сделает ваш
+ * код безопаснее.
+ *
+ * По умолчанию VList::iterator создает не инициализированный итератор.
+ * Вы должны назначить контейнер ему, используя VList::begin(),
+ * VList::end() или VList::insert() до того, как начнете перебирать.
+ * Дальше показан типичный цикл перебора всех элементов:
+ * \code
+ * VList<VByteArray> list;
+ * list.append("Январь");
+ * list.append("Февраль");
+ * ...
+ * list.append("Декабрь");
+ *
+ * VList<VByteArray>::iterator i;
+ * for(i = list.begin(); i != list.end(); ++i)
+ *     cout << *i << endl;
+ * \endcode
+ * Это можно сделать и с VList::const_iterator. Дальше показан пример,
+ * который можно сделать только с VList::iterator:
+ * \code
+ * VList<int>::iterator i;
+ * for(i=list.begin(); i!=list.end(); ++i)
+ *     *i += 2;
+ * \endcode
+ * Здесь каждый элемент увеличивается на 2. 
+ *
+ * Большинство функций VList требуют целое число в качестве индекса.
+ * Поэтому зачастую можно обойтись и обычным циклом (без итератора).
+ * Однако итераторы нужны для всех общих алгоритмов (дописать ссылку).
+ * \code
+ * VList<char *> list;
+ * ...
+ * vDeleteAll(list.begin(), list.end());
+ * \endcode
+ * \see VList::const_iterator и VMutableListIterator
+ */
+
+/*!
+ * \typedef VList::iterator::iterator_category
+ * Синоним для \c std::random_access_iterator_tag, показывающий, что
+ * итератор является итератором случайного доступа.
+ */
+/*!
+ * \fn VList::iterator::iterator()
+ * Создает не инициализированный итератор.\n
+ * Итератору нужно назначить контейнер до вызова таких функций, как
+ * operator*() или operator++().
+ * \see VList::begin() и VList::end()
+ */
+/*!
+ * \fn VList::iterator::iterator(const iterator &other)
+ * Конструктор копий для \a other.
+ */
+/*!
+ * \fn bool VList::iterator::operator!=(const iterator &other) const
+ * Возвращает \c true, если этот итератор указывает не на тот же
+ * элемент, что и \a other. Иначе \c false.
+ * \see operator==()
+ */
+/*!
+ * \fn bool VList::iterator::operator!=(const const_iterator &other) const
+ * \overload
+ */
+/*!
+ * \fn T &VList::iterator::operator*() const
+ * Возвращает ссылку на текущий элемент.\n
+ * Вы можете менять полученный элемент, например:
+ * \code
+ * if( *it == "Hello" )
+ *     *it = "Bonjour";
+ * \endcode
+ * \see operator->()
+ */
+/*!
+ * \fn iterator VList::iterator::operator+(int j) const
+ * Возвращает итератор, указывающий на элемент через \a j позиций.
+ * \see operator-() и operator+=()
+ */
+/*!
+ * \fn iterator &VList::iterator::operator++()
+ * Префиксная форма инкремента (++it). Увеличивает итератор и возвращает
+ * его.\n Для VList::end() результат не определен.
+ * \see operator--()
+ */
+/*!
+ * \fn iterator VList::iterator::operator++(int)
+ * \overload \n
+ * Постфиксная форма инкремента (it++).
+ */
+/*!
+ * \fn iterator &VList::iterator::operator+=(int j)
+ * Перемещает итератор на \a j позиций вперед (или назад, если \a j отрицательна).
+ * \see operator-=() и operator+()
+ */
+/*!
+ * \fn iterator VList::iterator::operator-(int j) const
+ * Возвращает итератор на элемент через \a j позиций назад
+ * (или вперед, если \a j отрицательна).
+ * \see operator+() и operator-=()
+ */
+/*!
+ * \fn int VList::iterator::operator-(iterator other) const
+ * Возвращает число элементов между этим итератором и \a other.
+ */
+/*!
+ * \fn iterator &VList::iterator::operator--()
+ * Префиксная форма декремента (--it). Уменьшает итератор и возвращает его.\n
+ * Для VList::begin() результат не определен.
+ * \see operator++()
+ */
+/*!
+ * \fn iterator VList::iterator::operator--(int)
+ * \overload \n
+ * Постфиксная форма декремента (it--). Возвращает текущий итератор и уменьшает его.
+ */
+/*!
+ * \fn iterator &VList::iterator::operator-=(int j)
+ * Смещает итератор на \a j позиций назад (или вперед, если \a j отрицательна).
+ * \see operator+=() и operator-()
+ */
+/*!
+ * \fn T *VList::iterator::operator->() const
+ * Возвращает указатель на текущий элемент.
+ * \see operator*()
+ */
+/*!
+ * \fn bool VList::iterator::operator<(const iterator &other) const
+ * Возвращает \c true, если текущий элемент находится до \a other.
+ */
+/*!
+ * \fn bool VList::iterator::operator<(const const_iterator &other) const
+ * \copydoc VList::iterator::operator<()
+ */
+/*!
+ * \fn bool VList::iterator::operator<=(const iterator &other) const
+ * Возвращает \c true, если текущий элемент находится до или равен \a other.
+ */
+/*!
+ * \fn bool VList::iterator::operator<=(const const_iterator &other) const
+ * \copydoc VList::iterator::operator<=()
+ */
+/*!
+ * \fn bool VList::iterator::operator==(const iterator &other) const
+ * Возвращает \c true, если текущий элемент равен \a other. Иначе \c false.
+ * \see operator!=()
+ */
+/*!
+ * \fn bool VList::iterator::operator==(const const_iterator &other) const
+ * \copydoc VList::iterator::operator==()
+ */
+/*!
+ * \fn bool VList::iterator::operator>(const iterator &other) const
+ * Возвращает \c true, если текущий элемент находится после \a other.
+ */
+/*!
+ * \fn bool VList::iterator::operator>(const const_iterator &other) const
+ * \copydoc VList::iterator::operator>()
+ */
+/*!
+ * \fn bool VList::iterator::operator>=(const iterator &other) const
+ * Возвращает \c true, если текущий элемент находится после или равен \a other.
+ */
+/*!
+ * \fn bool VList::iterator::operator>=(const const_iterator &other) const
+ * \copydoc VList::iterator::operator>=()
+ */
+/*!
+ * \fn T &VList::iterator::operator[](int j) const
+ * Возвращает ссылку на элемент с позиции *this + \a j.
+ * Элемент можно изменять.
  * \see operator+()
  */
