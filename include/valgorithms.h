@@ -10,7 +10,7 @@ RandomAccessIterator vBinaryFind(RandomAccessIterator begin,
     RandomAccessIterator it;
     forever
     {
-	it = begin + (int(end - begin) / 2);
+	it = begin + int(int(end - begin) / 2);
 	if(*it > value)
 	    begin = it + 1;
 	else if(*it < value)

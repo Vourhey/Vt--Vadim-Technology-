@@ -441,6 +441,56 @@
  * \overload \n
  * Если \a i вне списка, возвращается \a defaultValue.
  */
+/*!
+ * \fn bool VList::operator!=(const VList<T> &other) const
+ * Возвращает \c true, если этот список не равен \a other.
+ * Иначе \c false. Два списка считаются не равными, если
+ * имеют разные элементы или в другом порядке.
+ * \see operator==()
+ */
+/*!
+ * \fn VList<T> VList::operator+(const VList<T> &other) const 
+ * Возвращает список содержащий все элементы из этого списка и из \c other.
+ * \see operator+=()
+ */
+/*!
+ * \fn VList<T> &VList::operator+=(const VList<T> &other)
+ * Добавляет в конец этого списка все элементы из \a other.
+ * \see operator+() и append()
+ */
+/*!
+ * \fn VList<T> &VList::operator+=(const T &value)
+ * \overload \n
+ * Добавляет в конец списка \a value.
+ * \see append() и operator<<()
+ */
+/*!
+ * \fn VList<T> &VList::operator<<(const VList<T> &other)
+ * Добавляет в конец этого списка все элементы из \a other.
+ * \see operator+=() и append()
+ */
+/*!
+ * \fn VList<T> &VList::operator<<(const T &value)
+ * \overload \n
+ * Добавляет в конец списка \a value.
+ */
+/*!
+ * \fn bool VList::operator==(const VList<T> &other) const
+ * Возвращает \c true, если этот список равен \a other.
+ * Иначе \c false. Два списка считаются равными, если имеют
+ * одинаковые элементы и в таком же порядке.
+ * \see operator!=()
+ */
+/*!
+ * \fn T &VList::operator[](int i)
+ * Возвращает элемент с позиции \a i, доступный для изменений.
+ * \a i должна быть в пределах списка (т.е. 0 <= \a i < size()).
+ * \see at() и value()
+ */
+/*!
+ * \fn const T &VList::operator[](int i) const
+ * \overload \n Равносильно at().
+ */
 
 /*!
  * \class VList::const_iterator

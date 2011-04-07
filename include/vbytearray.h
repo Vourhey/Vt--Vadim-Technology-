@@ -46,7 +46,7 @@ public:
     // NR: добавить проверку на выход за границы
     inline char at(int i) const { return d->str[i]; }
     // NR: добавить исключение, если n > size
-    void chop(int n) { reallocData(d->size - n); }
+    void chop(int n) { d->size -= n; }
 
     inline void clear() { free(d); d = 0; }
     inline const char *constData() const { return d->str; }
@@ -128,7 +128,7 @@ public:
     VByteArray &replace(char before, char after);
 
     void reserve(int size) { reallocData(size); }
-    void resize(int size)  { reallocData(size); }
+    void resize(int size)  { if(size>d->size)reallocData(size); d->size = size; }
 
     VByteArray &setNum(int n, int base = 10)
 	{ return setNum(vlonglong(n), base); }

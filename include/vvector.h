@@ -69,7 +69,7 @@ public:
     void remove(int i, int count);
     void replace(int i, const T &value) { d->data[i] = value; }
     void reserve(int size) { reallocData(size); }
-    void resize(int size) { reallocData(size); }
+    void resize(int size) { if(size>d->size) reallocData(size); d->size = size; }
 
     int size() const { return d->size; }
     bool startsWith(const T &value) const { return (d->data[0] == value); }

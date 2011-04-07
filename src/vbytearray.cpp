@@ -164,11 +164,11 @@ void VByteArray::reallocData(int size)
  * \brief Массив байтов
  *
  * Этот класс можно использовать как тип данных строка.
- * Т.е. вместо \c const \c char \c *.
+ * Т.е. вместо \c char \c *.
  */
 
 /*!
- * \def VT_NO_CAST_FROM_BYTEARRAY
+ * \var VT_NO_CAST_FROM_BYTEARRAY
  * \relates VByteArray
  * Отменяет автоматическое преобразование в \c const \c char \c *
  * и \c const \c char \c *.
@@ -236,6 +236,26 @@ VByteArray::~VByteArray()
     free(d);
 }
 
+/*!
+ * \fn VByteArray &VByteArray::append(const VByteArray &ba)
+ * Добавляет в конец массив \a ba.\n Пример:
+ * \code
+ * VByteArray x("free");
+ * VByteArray y("dom");
+ * x.append(y);
+ * // x == "freedom";
+ * \endcode
+ * \see operator+=(), prepend() и insert()
+ */
+/*!
+ * \fn VByteArray &VByteArray::append(const char *str)
+ * \overload \n
+ * Добавляет строку \a str в конец массива.
+ */
+/*!
+ * Добавляет первые \a len байтов строки \a str в конец этого массива. 
+ * Предполагается, что \a len не больше длины \a str.
+ */
 VByteArray &VByteArray::append(const char *str, int len)
 {
     reallocData(d->size + len);
@@ -245,6 +265,9 @@ VByteArray &VByteArray::append(const char *str, int len)
     return *this;
 }
 
+/*!
+ * \overload \n Добавляет символ \a ch в конец массива.
+ */
 VByteArray &VByteArray::append(char ch)
 {
     ++d->size;
@@ -254,16 +277,66 @@ VByteArray &VByteArray::append(char ch)
     return *this;
 }
 
+/*!
+ * \fn char VByteArray::at(int i) const
+ * Возвращает символ с позиции \a i. \a i должна быть
+ * в пределах массива (т.е. 0 <= \a i < size()).
+ * \see operator[]()
+ */
+/*!
+ * \fn void VByteArray::chop(int n)
+ * Удаляет \a n байтов с конца массива.\n Пример:
+ * \code
+ * VByteArray ba("STARTTLS\r\n");
+ * ba.chop(2);        // ba == "STARTTLS"
+ * \endcode
+ * \see resize()
+ */
+/*!
+ * \fn void VByteArray::clear()
+ * Удаляет все содержимое массива.
+ * \see resize() и isEmpty()
+ */
+/*!
+ * \fn const char *VByteArray::constData() const
+ * Возвращает указатель на данные, хранящиеся в массиве.
+ * Данных ограничены '\0'-символом. Указатель будет действителен
+ * пока не будет перевыделения памяти.
+ * \see data() и operator[]()
+ */
+/*!
+ * \fn bool VByteArray::contains(const VByteArray &ba) const
+ * Возвращает \c true, если массив содержит последовательность
+ * байтов \a ba. Иначе \c false.
+ * \see indexOf() и count()
+ */
+/*!
+ * \overload \n
+ * Возвращает \c true, если массив содержит строку \a str. Иначе \c false.
+ */
 bool VByteArray::contains(const char *str) const
 {
     return (indexOf(str) != -1);
 }
 
+/*!
+ * \overload \n
+ * Возвращает \c true, если массив содержит символ \a ch. Иначе \c false.
+ */
 bool VByteArray::contains(char ch) const
 {
     return (indexOf(ch) != -1);
 }
 
+/*!
+ * \fn int VByteArray::count(const VByteArray &ba) const
+ * Возвращает число вхождений \a ba в массив.
+ * \see contains() и indexOf()
+ */
+/*!
+ * \overload \n
+ * Возвращает число вхождений строки \a str в массив.
+ */
 int VByteArray::count(const char *str) const
 {
     int c = 0;
@@ -278,6 +351,10 @@ int VByteArray::count(const char *str) const
     return c;
 }
 
+/*!
+ * \overload \n
+ * Возвращает вхождение символа \a ch в массив.
+ */
 int VByteArray::count(char ch) const
 {
     int c = 0;
@@ -288,7 +365,46 @@ int VByteArray::count(char ch) const
 
     return c;
 }
-
+/*!
+ * \fn int VByteArray::count() const
+ * Равносильно size().
+ */
+/*!
+ * \fn char *VByteArray::data()
+ * Возвращает указатель на данные, хранящиеся в массиве.
+ * Строка ограничена '\0'-символом. \n Пример:
+ * \code
+ * VByteArray ba("Hello world");
+ * char *data = ba.data();
+ * while(*data)
+ * {
+ *     cout << '[' << *data << ']' << endl;
+ *     ++data;
+ * }
+ * \endcode
+ * Если вы не собираетесь изменять содержимое, то лучше 
+ * использовать constData().
+ * \see constData() и operator[]()
+ */
+/*!
+ * \fn const char *VByteArray::data() const
+ * \overload
+ */
+/*!
+ * \fn bool VByteArray::endsWith(const VByteArray &ba) const
+ * Возвращает \c true, если массив заканчивается на \a ba. 
+ * Иначе \c false. \n Пример:
+ * \code
+ * VByteArray url("http://anyhost.com/index.html");
+ * if(url.endsWith(".html"))
+ *     ...
+ * \endcode
+ * \see startsWith()
+ */
+/*!
+ * \overload \n Возвращает \c true, если массив 
+ * заканчивается на строку \a str. Иначе \c false.
+ */
 bool VByteArray::endsWith(const char *str) const
 {
     int l = vstrlen(str);
@@ -299,11 +415,29 @@ bool VByteArray::endsWith(const char *str) const
     return false;
 }
 
+/*!
+ * \overload \n Возвращает \c true, если массив
+ * закачивается на символ \c ch. Иначе \c false.
+ */
 bool VByteArray::endsWith(char ch) const
 {
     return (d->str[d->size-1] == ch);	
 }
 
+/*!
+ * Устанавливает каждый байт в символ \a ch.
+ * Если \a size равна -1 (по умолчанию), то массив изменяет
+ * размер до \a size.\n Пример:
+ * \code
+ * VByteArray ba("Istambul");
+ * ba.fill('0');
+ * // ba == "oooooooo"
+ *
+ * ba.fill('X', 2);
+ * // ba == "XX"
+ * \endcode
+ * \see resize()
+ */
 VByteArray &VByteArray::fill(char ch, int size)
 {
     if(size == -1) size = d->size;
@@ -317,6 +451,21 @@ VByteArray &VByteArray::fill(char ch, int size)
     return *this;
 }
 
+/*!
+ * \fn int VByteArray::indexOf(const VByteArray &ba, int from = 0) const
+ * Возвращает позицию первого вхождения \a ba в массив. Поиск производится,
+ * начиная с \a from и до конца. Возвращается -1, если \a ba не найден.\n Пример:
+ * \code
+ * VByteArray x("sticky question");
+ * VByteArray y("sti");
+ * x.indexOf(y);             // return 0
+ * x.indexOf(y, 1);          // return 10
+ * x.indexOf(y, 10);         // return 10
+ * x.indexOf(y, 11);         // return -1
+ * \endcode
+ * \see lastIndexOf(), contains() и count()
+ */
+
 int indexOf_helper(const char *ba, int size, const char *str, int len, int from)
 {
     for(int i = from; i<size; i++)
@@ -325,11 +474,30 @@ int indexOf_helper(const char *ba, int size, const char *str, int len, int from)
     return -1;
 }
 
+/*!
+ * \overload \n
+ * Возвращает позицию первого вхождения строки \a str в массив, начиная
+ * с \a from. Возвращает -1 если строка не найдена.
+ */
 int VByteArray::indexOf(const char *str, int from) const
 {
     return indexOf_helper(d->str, d->size, str, vstrlen(str), from);
 }
 
+/*!
+ * \overload \n
+ * Возвращает позицию первого вхождения символа \a ch в массив.
+ * Возвращает -1, если символ не найден.\n Пример:
+ * \code
+ * VByteArray ba("abcba");
+ * ba.indexOf('b');         // return 1
+ * ba.indexOf('b', 1);      // return 1
+ * ba.indexOf('b', 2);      // return 3
+ * ba.indexOf('x');         // return -1
+ * \endcode
+ * \see lastIndexOf() и contains()
+ *
+ */
 int VByteArray::indexOf(char ch, int from) const
 {
     for(int i = from; i<d->size; i++)
@@ -338,6 +506,25 @@ int VByteArray::indexOf(char ch, int from) const
     return -1;
 }
 
+/*!
+ * \fn VByteArray &VByteArray::insert(int i, const VByteArray &ba)
+ * Вставляет массив байтов \a ba в позцию \a i.\n Пример:
+ * \code
+ * VByteArray ba("Meal");
+ * ba.insert(1, VByteArray("ontr"));
+ * // ba == "Montreal"
+ * \endcode
+ * \see append(), prepend(), replace() и remove()
+ */
+/*!
+ * \fn VByteArray &VByteArray::insert(int i, const char *str)
+ * \overload \n
+ * Вставляет строку \a str в позцию \a i.
+ */
+/*!
+ * \overload \n
+ * Вставляет первые \a len байтов строки \a str в позицию \a i.
+ */
 VByteArray &VByteArray::insert(int i, const char *str, int len)
 {
     int olds = d->size;
@@ -350,6 +537,10 @@ VByteArray &VByteArray::insert(int i, const char *str, int len)
     return *this;
 }
 
+/*!
+ * \overload \n
+ * Вставляет символ \a ch в позицию \a i в массив байтов.
+ */
 VByteArray &VByteArray::insert(int i, char ch)
 {
     d->size++;
@@ -362,6 +553,39 @@ VByteArray &VByteArray::insert(int i, char ch)
     return *this;
 }
 
+/*!
+ * \fn bool VByteArray::isEmpty() const
+ * Возвращает \c true, если размер массива байтов равен 0. 
+ * Иначе \c false.\n Пример:
+ * \code
+ * VByteArray().isEmpty();      // return true
+ * VByteArray("").isEmpty();    // return true
+ * VByteArray("abc").isEmpty(); // return false
+ * \endcode
+ * \see size()
+ */
+
+/*!
+ * \fn int VByteArray::lastIndexOf(const VByteArray &ba, int from = -1) const
+ * Возвращает позицию последнего вхождения \a ba в массив байто.
+ * Поиск производится в обраном порядке, начиная с \a from. Если \a from
+ * равна -1 (по умолчанию), то поиск происходит с конца массива.
+ * Возвращается -1, если \a ba не найден:
+ * \code
+ * VByteArray x("crazy azimuts");
+ * VByteArray y("az");
+ * x.lastIndexOf(y);     // return 6
+ * x.lastIndexOf(y, 6);  // return 6
+ * x.lastIndexOf(y, 5);  // return 2
+ * x.lastIndexOf(y, 1);  // retun -1
+ * \endcode
+ * \see indexOf(), contains() и count()
+ */
+/*!
+ * \overload \n
+ * Возвращает позицию последнего вхождения строки \a str
+ * в массив. Если строка не найдена, возвращается -1.
+ */
 int VByteArray::lastIndexOf(const char *str, int from) const
 {
     if(from == -1) from = d->size-1;
@@ -374,6 +598,19 @@ int VByteArray::lastIndexOf(const char *str, int from) const
     return -1;
 }
 
+/*!
+ * \overload \n
+ * Возвращается позицию последнего вхождения символа \a ch
+ * в массив. Если символ не найден, возвращается -1.\n Пример:
+ * \code
+ * VByteArray ba("abcba");
+ * ba.lastIndexOf('b');        // return 3
+ * ba.lastIndexOf('b', 3);     // return 3
+ * ba.lastIndexOf('b', 2);     // return 1
+ * ba.lastIndexOf('x');        // return -1
+ * \endcode
+ * \see indexOf() и contains()
+ */
 int VByteArray::lastIndexOf(char ch, int from) const
 {
     if(from == -1) from = d->size - 1;
@@ -385,6 +622,67 @@ int VByteArray::lastIndexOf(char ch, int from) const
     return -1;
 }
 
+/*!
+ * \fn int VByteArray::length() const
+ * Равносильно size().
+ */
+/*!
+ * \fn VByteArray VByteArray::number(int n, int base = 10)
+ * Возвращает массив байтов, содержащий строковой эквивалент
+ * числа \a n с основанием \a base (10 по умолчанию).
+ * \a base может быть от 2 до 36.\n Пример:
+ * \code
+ * int n = 63;
+ * VByteArray::number(n);           // return "63"
+ * VByteArray::number(n, 16);       // return "3f"
+ * \endcode
+ * \see setNum()
+ */
+/*!
+ * \fn VByteArray VByteArray::number(uint n, int base = 10)
+ * \overload
+ */
+/*!
+ * \fn VByteArray VByteArray::number(vlonglong n, int base = 10)
+ * \overload
+ */
+/*!
+ * \fn VByteArray VByteArray::number(vulonglong n, int base = 10)
+ * \overload
+ */
+/*!
+ * \fn VByteArray VByteArray::number(double n, int prec = 6)
+ * \overload \n
+ * Возвращает строковой эквивалент числа \a n округленного 
+ * до \a prec знаков после запятой.
+ * \code
+ * VByteArray ba = VByteArray::number(12.3456, 3);
+ * // ba == "12.345"
+ * \endcode
+ * \see setNum()
+ */
+
+/*!
+ * \fn VByteArray &VByteArray::prepend(const VByteArray &ba)
+ * Вставляет в начало массива \a ba и возвращает ссылку на этот массив.
+ * \n Пример:
+ * \code
+ * VByteArray x("ship");
+ * VByteArray y("air");
+ * x.prepend(y);
+ * // x == "airship"
+ * \endcode
+ * Равносильно вызову insert(0, \a ba).
+ * \see append() и insert().
+ */
+/*!
+ * \fn VByteArray &VByteArray::prepend(const char *str)
+ * \overload \n Вставляет строку \a str в начало массива.
+ */
+/*!
+ * \overload \n Вставляет первые \a len байтов строки \a str
+ * в начало массива.
+ */
 VByteArray &VByteArray::prepend(const char *str, int len)
 {
     reallocData(d->size + len);
@@ -395,6 +693,9 @@ VByteArray &VByteArray::prepend(const char *str, int len)
     return *this;
 }
 
+/*!
+ * \overload \n Вставляет символ \a ch в начало массива.
+ */
 VByteArray &VByteArray::prepend(char ch)
 {
     d->size++;
@@ -405,7 +706,40 @@ VByteArray &VByteArray::prepend(char ch)
     return *this;
 }
 
+/*!
+ * \fn void VByteArray::push_back(const VByteArray &other)
+ * \stl Равносильно append(\a other).
+ */
+/*!
+ * \fn void VByteArray::push_back(const char *str)
+ * \overload \n Равносильно append(\a str).
+ */
+/*!
+ * \fn void VByteArray::push_back(char ch)
+ * \overload \n Равносильно append(\c ch).
+ */
+/*!
+ * \fn void VByteArray::push_front(const VByteArray &other)
+ * \stl Равносильно prepend(\a other).
+ */
+/*!
+ * \fn void VByteArray::push_front(const char *str)
+ * \overload \n Равносильно prepend(\a str).
+ */
+/*!
+ * \fn void VByteArray::push_front(char ch)
+ * \overload \n Равносильно prepend(\a ch).
+ */
+
 // алгоритм перевода в Base64 взят с Wikipedia
+/*!
+ * Возвращает копию массива, закодированную по алгоритму Base64.
+ * \code
+ * VByteArray text("Vt is great!");
+ * text.toBase64();     // returns "VnQgaXMgZ3JlYXQh"
+ * \endcode
+ * Про алгоритм <a href="http://ru.wikipedia.org/wiki/Base32">подробнее</a>.
+ */
 VByteArray VByteArray::toBase64() const
 {
     const char *alphabit = "ABCDEFGHI" "JKLMNOPQR" "STUVWXYZa"
@@ -445,16 +779,44 @@ VByteArray VByteArray::toBase64() const
     return tmp;
 }
 
+/*!
+ * \fn bool VByteArray::startsWith(const VByteArray &ba) const
+ * Возвращает \c true, если массив начинается с \a ba. 
+ * Иначе \c false.\n Пример:
+ * \code
+ * VByteArray url("ftp://anyhost/");
+ * if(url.startsWith("ftp:"))
+ *    ...
+ * \endcode
+ * \see endsWith()
+ */
+/*!
+ * \overload \n Возвращает \c true, если массив начинается
+ * со строки \a str. Иначе \c false.
+ */
 bool VByteArray::startsWith(const char *str) const
 {
     return !vstrncmp(d->str, str, vstrlen(str));
 }
 
+/*!
+ * \overload \n Возвращает \c true, если массив начинается
+ * с символа \a ch. Иначе \c false.
+ */
 bool VByteArray::startsWith(char ch) const
 {
     return d->str[0] == ch;
 }
 
+/*!
+ * Удаляет \a len байтов с позиции \a pos.\n Пример:
+ * \code
+ * VByteArray ba("Montreal");
+ * ba.remove(1, 4);
+ * // ba == "Meal"
+ * \endcode
+ * \see insert() и replace()
+ */
 VByteArray &VByteArray::remove(int pos, int len)
 {
     memmove(d->str+pos, d->str+pos+len, d->size-pos-len);
@@ -464,6 +826,13 @@ VByteArray &VByteArray::remove(int pos, int len)
     return *this;
 }
 
+/*!
+ * Возвращает копию этого массива, повторенную \a times раз.
+ * \code
+ * VByteArray ba("ab");
+ * ba.repeated(4);      // retruns "abababab"
+ * \endcode
+ */
 VByteArray VByteArray::repeated(int times) const
 {
     VByteArray tmp(times * d->size);
@@ -475,6 +844,25 @@ VByteArray VByteArray::repeated(int times) const
     return tmp;
 }
 
+/*!
+ * \fn VByteArray &VByteArray::replace(int pos, int len, const VByteArray &after)
+ * Заменят \a len байтов с позиции \a pos на массив \a after.\n Пример:
+ * \code
+ * VByteArray x("Say yes!");
+ * VByteArray y("no");
+ * x.replace(4, 3, y);
+ * // x == "Say no!"
+ * \endcode
+ * \see insert() и remove()
+ */
+/*!
+ * \fn VByteArray &VByteArray::replace(int pos, int len, const char *after)
+ * \overload \n Заменят \a len байтов с позиции \a pos на строку \a after.
+ */
+/*!
+ * \overload \n Заменят \a len байтов с позиции \a pos на первые
+ * \a alen байтов строки \a after.
+ */
 VByteArray &VByteArray::replace(int pos, int len, const char *after, int alen)
 {
     int old = d->size;
@@ -487,6 +875,23 @@ VByteArray &VByteArray::replace(int pos, int len, const char *after, int alen)
     return *this;
 }
 
+/*!
+ * \fn VByteArray &VByteArray::replace(const VByteArray &before, const VByteArray &after)
+ * \overload \n Заменяет каждое вхождение \a before на массив \a after.\n Пример:
+ * \code
+ * VByteArray ba("colour behaviour flavour neighbour");
+ * ba.replace(VByteArray("ou"), VByteArray("o"));
+ * // ba == "color behavior flavor neghbor"
+ * \endcode
+ */
+/*!
+ * \fn VByteArray &VByteArray::replace(const char *before, const VByteArray &after)
+ * \overload \n Заменят каждое вхождение строки \a before на массив \a after.
+ */
+/*!
+ * \overload \n Заменяет каждое вхождение первых \a bsize байтов строки
+ * \a before на первые \a asize байтов строки \a after.
+ */
 VByteArray &VByteArray::replace(const char *before, int bsize, const char *after, int asize)
 {
     int pos = indexOf_helper(d->str, d->size, before, bsize, 0);
@@ -496,6 +901,17 @@ VByteArray &VByteArray::replace(const char *before, int bsize, const char *after
     return replace(pos, bsize, after, asize);
 }
 
+/*!
+ * \fn VByteArray &VByteArray::replace(const VByteArray &before, const char *after)
+ * \overload \n Заменятет кадое вхождение \a before на \a after.
+ */
+/*!
+ * \fn VByteArray &VByteArray::replace(const char *before, const char *after)
+ * \overload \n Заменят каждое вхождение \a before на \a after.
+ */
+/*!
+ * \overload \n Заменяет каждый символ \a before на массив \a after.
+ */
 VByteArray &VByteArray::replace(char before, const VByteArray &after)
 {
     int pos = indexOf(before);
@@ -503,6 +919,9 @@ VByteArray &VByteArray::replace(char before, const VByteArray &after)
     return replace(pos, 1, after.d->str, after.d->size);
 }
 
+/*!
+ * \overload \n Заменяет каждый символ \a before на строку \a after.
+ */
 VByteArray &VByteArray::replace(char before, const char *after)
 {
     int pos = indexOf(before);
@@ -512,14 +931,49 @@ VByteArray &VByteArray::replace(char before, const char *after)
     return replace(pos, 1, after, vstrlen(after));
 }
 
+/*!
+ * \overload \n Заменяет каждое вхождение \a before на символ \a after.
+ */
 VByteArray &VByteArray::replace(char before, char after)
 {
     int pos = indexOf(before);
-    if(pos == -1) return *this;
-    d->str[pos] = after;
+    
+    while(pos != -1) 
+    {
+	 d->str[pos] = after;
+	 pos = indexOf(before, pos+1);
+    }
     return *this;
 }
 
+/*!
+ * \fn VByteArray &VByteArray::setNum(int n, int base = 10)
+ * Массив становится равным строковому представлению числа \a n
+ * по основанию \a base (10 по умолчанию). \a base может быть
+ * от 2 до 36.\n Пример:
+ * \code
+ * VByteArray ba;
+ * int n = 63;
+ * ba.setNum(n);         // ba == "63"
+ * ba.setNum(n, 16);     // ba == "3f"
+ * \endcode
+ * \see number()
+ */
+/*!
+ * \fn VByteArray &VByteArray::setNum(uint n, int base = 10)
+ * \overload
+ */
+/*!
+ * \fn VByteArray &VByteArray::setNum(short n, int base = 10)
+ * \overload
+ */
+/*!
+ * \fn VByteArray &VByteArray::setNum(ushort n, int base = 10)
+ * \overload
+ */
+/*!
+ * \overload
+ */
 VByteArray &VByteArray::setNum(vulonglong n, int base)
 {
     char buf[65];
@@ -564,14 +1018,20 @@ VByteArray &VByteArray::setNum(vulonglong n, int base)
     return *this;
 }
 
+/*!
+ * \overload
+ */
 VByteArray &VByteArray::setNum(vlonglong n, int base)
 {
-    bool negativ = n < 0;
     setNum(vulonglong(vAbs(n)), base);
-    if(negativ) prepend('-');
+    if(n < 0) prepend('-');
     return *this;
 }
 
+/*!
+ * \overload \n Массив символов становится равным строковому
+ * представлению числа \a n, ограниченного \a prec знаками после запятой.
+ */
 VByteArray &VByteArray::setNum(double n, int prec)
 {
     int decpt;
@@ -598,3 +1058,230 @@ VByteArray &VByteArray::setNum(double n, int prec)
     d->size = i;
     return *this;
 }
+/*!
+ * \fn VByteArray &VByteArray::setNum(float n, int prec = 6)
+ * \overload
+ */
+
+/*!
+ * \fn int VByteArray::size() const
+ * Возвращает число байтов в массиве.\n Последний символ в
+ * массиве имеет позицию size()-1. Это из-за того, что любой
+ * массив ограничен '\0'-символом.\n Пример:
+ * \code
+ * VByteArray ba("Hello");
+ * int n = ba.size();       // n == 5
+ * ba.data()[0];            // return 'H'
+ * ba.data()[4];            // return 'o'
+ * ba.data()[5];            // return '\0'
+ * \endcode
+ * \see isEmpty() и resize()
+ */
+/*!
+ * \fn bool VByteArray::operator!=(const VByteArray &str) const
+ * Возвращает \c true, если массив символов не равен \a str.
+ * Иначе \c false. Сравнение производится с учетом регистра.
+ */
+/*!
+ * \fn VByteArray &VByteArray::operator+=(const VByteArray &ba)
+ * Добавляет в конец этого массива массив \a ba.\n Пример:
+ * \code
+ * VByteArray x("free");
+ * VByteArray y("dom");
+ * x += y;
+ * // x == "freedom"
+ * \endcode
+ * \see append() и prepend()
+ */
+/*!
+ * \fn VByteArray &VByteArray::operator+=(const char *str)
+ * \overload \n Добавляет в конец массива строку \a str.
+ */
+/*!
+ * \fn VByteArray &VByteArray::operator+=(char ch)
+ * \overload \n Добавляет в конец массива символ \a ch.
+ */
+/*!
+ * \fn bool VByteArray::operator<(const VByteArray &str) const
+ * Возвращает \c true, если этот массив меньше \a str. Иначе \c false.
+ * Сравнение производится с учетом регистра.
+ */
+/*!
+ * \fn bool VByteArray::operator<=(const VByteArray &str) const
+ * Возвращает \c true, если массив меньше или равен \a str.
+ * Иначе \c false. Сравнение производится с учетом регистра.
+ */
+/*!
+ * \fn bool VByteArray::operator==(const VByteArray &str) const
+ * Возвращает \c true, если массив равен \a str. Иначе \c false.
+ * Сравнение производится с учетом регистра.
+ */
+/*!
+ * \fn bool VByteArray::operator>(const VByteArray &str) const
+ * Возвращает \c true, если массив больше \a str. Иначе \c false.
+ * Сравнение производится с учетом регистра.
+ */
+/*!
+ * \fn bool VByteArray::operator>=(const VByteArray &str) const
+ * Возвращает \c true, если массив больше или равен \a str.
+ * Иначе \c false. Сравнение производится с учетом регистра.
+ */
+/*!
+ * \fn char &VByteArray::operator[](int i)
+ * Возвращает ссылку на символ с позиции \a i.\n Пример:
+ * \code
+ * VByteArray ba;
+ * ba.reserve(10);
+ * for(int i = 0; i<10; ++i)
+ *     ba[i] = 'A' + i;
+ * // ba == "ABCDEFGHIJ"
+ * \endcode
+ * \see at()
+ */
+/*!
+ * \fn char VByteArray::operator[](int i) const
+ * \overload \n Равносильно at(\a i).
+ */
+/*!
+ * \fn char &VByteArray::operator[](uint i)
+ * \overload
+ */
+/*!
+ * \fn char VByteArray::operator[](uint i) const
+ * \overload
+ */
+/*!
+ * \fn void VByteArray::reserve(int size)
+ * Выделяет память под \a size символов. Эта функция
+ * позволяет напрямую следить за выделением памяти. Так же
+ * она полезна, если вы заранее знаете, сколько байтов будет
+ * занимать массив. Функция не меняет размер, а только
+ * выделенную память.
+ * \see resize()
+ */
+/*!
+ * \fn void VByteArray::resize(int size)
+ * Изменят размер массива до \a size. Если \a size
+ * больше текущего размера, то массив выделяет дополнительную
+ * память. Если \a size меньше текущего размера, то последние
+ * символы теряются.
+ * \see size()
+ */
+/*!
+ * \fn bool operator!=(const VByteArray &a1, const char *a2)
+ * \relates VByteArray
+ * \overload \n Возвращает \c true, если \a a1 не равен \a a2. Иначе \c false.
+ */
+/*!
+ * \fn bool operator!=(const char *a1, const VByteArray &a2)
+ * \relates VByteArray
+ * \overload \n Возвращает \c true, если строка \a a1 не равна
+ * массиву \a a2. Иначе \c false.
+ */
+/*!
+ * \fn const VByteArray operator+(const VByteArray &a1, const char *a2)
+ * \relates VByteArray
+ * \overload \n Возвращает массив, содержащий соединенные \a a1 и \a a2.
+ */
+/*!
+ * \fn const VByteArray operator+(const VByteArray &a1, char a2)
+ * \relates VByteArray
+ * \overload \n Возвращает массив, содержащий соединенные \a a1 и \a a2.
+ */
+/*!
+ * \fn const VByteArray operator+(const char *a1, const VByteArray &a2)
+ * \relates VByteArray
+ * \overload \n Возвращает массив, содержащий соединенные \a a1 и \a a2.
+ */
+/*!
+ * \fn const VByteArray operator+(char a1, const VByteArray &a2)
+ * \relates VByteArray
+ * \overload \n Возвращает массив, содержащий соединенные \a a1 и \a a2.
+ */
+/*!
+ * \fn const VByteArray operator+(const VByteArray &a1, const VByteArray &a2)
+ * \relates VByteArray
+ * \overload \n Возвращает массив, содержащий результат соединения \a a1 и \a a2.
+ * \see VByteArray::operator+=()
+ */
+/*!
+ * \fn bool operator<(const VByteArray &a1, const char *a2)
+ * \relates VByteArray
+ * \overload \n Возвращает \c true, если массив \a a1 меньше
+ * строки \a a2. Иначе \c false.
+ */
+/*!
+ * \fn bool operator<(const char *a1, const VByteArray &a2)
+ * \relates VByteArray
+ * Возвращает \c true, если строка \a a1 меньше массива \a a2.
+ * Иначе \c false.
+ */
+/*!
+ * \fn bool operator<=(const VByteArray &a1, const char *a2)
+ * \relates VByteArray
+ * \overload \n Возвращает \c true, если массив \a a2 меньше
+ * или равен \a a2. Иначе \c false.
+ */
+/*!
+ * \fn bool operator<=(const char *a1, const VByteArray &a2)
+ * \relates VByteArray
+ * \overload \n Возвращает \c true, если строка \a a1 меньше
+ * или равна массиву \a a2. Иначе \c false.
+ */
+/*!
+ * \fn bool operator==(const VByteArray &a1, const char *a2)
+ * \relates VByteArray
+ * \overload \n Возвращает \c true, если массив \a a1
+ * равен строке \a a2. Иначе \c false.
+ */
+/*!
+ * \fn bool operator==(const char *a1, const VByteArray &a2)
+ * \relates VByteArray
+ * \overload \n Возвращает \c true, если строка \a a1 равна
+ * массиву \a a2. Иначе \c false.
+ */
+/*!
+ * \fn bool operator>(const VByteArray &a1, const char *a2)
+ * \relates VByteArray
+ * \overload \n Возвращает \c true, если массив \a a1 больше
+ * строки \a a2. Иначе \c false.
+ */
+/*!
+ * \fn bool operator>(const char *a1, const VByteArray &a2)
+ * \relates VByteArray
+ * \overload \n Возвращает \c true, если строка \a a1
+ * больше массива \a a2. Иначе \c false.
+ */
+/*!
+ * \fn bool operator>=(const VByteArray &a1, const char *a2)
+ * \relates VByteArray
+ * \overload \n Возвращает \c true, если массив \a a1
+ * больше или равен строки \a a2. Иначе \c false.
+ */
+/*!
+ * \fn bool operator>=(const char *a1, const VByteArray &a2)
+ * \relates VByteArray
+ * \overload \n Возвращает \c true, если строка \a a1
+ * больше или равна массива \a a2. Иначе \c false.
+ */
+/*!
+ * \fn VByteArray::operator const char *() const
+ * Возвращает указатель на данные, хранящиеся в массиве.
+ * Данные ограничены '\0'-символом. Указатель действителен так
+ * долго, пока не будет перевыделена память.
+ *
+ * Этот оператор полезен для функций, принимающих <tt>const char *</tt>.
+ * Если вы объявете #VT_NO_CAST_FROM_BYTEARRAY, то отключите этот оператор.
+ * \see constData()
+ */
+/*!
+ * \fn VByteArray::operator const void *() const
+ * Возвращает указатель на данные, хранящиеся в массиве.
+ * Данные ограничены '\0'-символом. Указатель действителен
+ * так долго, пока не будет перевыделена память.
+ *
+ * Оператор полезен для функций, принимающих <tt>const char *</tt>
+ * или <tt>const void *</tt>.
+ * \see constData()
+ */
+

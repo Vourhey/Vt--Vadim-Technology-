@@ -386,9 +386,7 @@ T VList<T>::takeAt(int i)
 }
 
 template<class T>
-typename VList<T>::iterator VList<T>::erase(
-		typename VList<T>::iterator begin, 
-		typename VList<T>::iterator end )
+typename VList<T>::iterator VList<T>::erase(iterator begin, iterator end )
 {
     int e = end - this->begin();
     int b = begin - this->begin();
@@ -410,8 +408,7 @@ void VList<T>::insert(int i, const T &value)
 }
 
 template<class T>
-typename VList<T>::iterator VList<T>::insert( typename VList<T>::iterator before,
-					      const T &value)
+typename VList<T>::iterator VList<T>::insert(iterator before, const T &value)
 {
     int i = before - d->data;
     insert(i, value);

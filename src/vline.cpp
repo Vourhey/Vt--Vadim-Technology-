@@ -271,8 +271,8 @@
  */
 vreal VLineF::length() const
 {
-   int x = dx();
-   int y = dy();
+   vreal x = dx();
+   vreal y = dy();
    return sqrt(x*x + y*y);
 }
 

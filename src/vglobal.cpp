@@ -15,7 +15,7 @@
  * с другим объединением.
  *
  * Если вы хотите использовать VFlags для своих объединений, то используйте
- * V_DECLARE_FLAGS() и V_DECLARE_OPERATORS_FOR_FLAGS(). Пример:
+ * #V_DECLARE_FLAGS() и #V_DECLARE_OPERATORS_FOR_FLAGS(). Пример:
  * \code
  * class MyClass
  * {
@@ -146,7 +146,7 @@
  * \see operator&(), operator|() и operator^()
  */
 /*!
- * \def V_DECLARE_FLAGS(Flags, Enum)
+ * \fn V_DECLARE_FLAGS(Flags,Enum)
  * \relates VFlags
  * Расширяется в
  * \code
@@ -157,12 +157,114 @@
  * \see V_DECLARE_OPERATORS_FOR_FLAGS()
  */
 /*!
- * \def V_DECLARE_OPERATORS_FOR_FLAGS(Flags)
+ * \fn V_DECLARE_OPERATORS_FOR_FLAGS(Flags)
  * \relates VFlags
  * Объявляет глобальные операторы operator|() для \a Flags.
  * \see V_DECLARE_FLAGS()
  */
 
+/*!
+ * \defgroup global_group Глобальные определения
+ * \{
+ */
+
+/*!
+ * \typedef vint8
+ * Синоним для <tt>signed char</tt>.
+ */
+/*!
+ * \typedef vint16
+ * Синоним для <tt>signed short</tt>.
+ */
+/*!
+ * \typedef vint32
+ * Синоним для <tt>signed int</tt>.
+ */
+/*!
+ * \typedef vint64
+ * Синоним для <tt>long long int</tt>. Литерал этого типа
+ * можно получить с помощью V_INT64_C():
+ * \code
+ * vint64 value = V_INT64_C(2147483647);
+ * \endcode
+ * \see V_INT64_C(), vuint64 и vlonglong
+ */
+/*!
+ * \typedef vlonglong
+ * Синоним для <tt>long long int</tt>.
+ * \see vulonglong и vint64
+ */
+/*!
+ * \typedef vptrdiff
+ * Представляет тип целого. На 32-битных платформах это равносильно
+ * vint32. На 64-битных равносильно vint64.
+ * \see vuintptr, vint32 и vint64
+ */
+/*!
+ * \typedef vreal
+ * Синоним для double.
+ */
+/*!
+ * \typedef vuint8
+ * Синоним для <tt>unsigned char</tt>.
+ */
+/*!
+ * \typedef vuint16
+ * Синоним для <tt>unsigned short</tt>.
+ */
+/*!
+ * \typedef vuint32
+ * Синоним для <tt>unsigned int</tt>.
+ */
+/*!
+ * \typedef vuint64
+ * Синоним для <tt>unsigned long long int</tt>. Литерал этого типа
+ * можно получить с помощью V_UINT64_C():
+ * \code
+ * vuint64 value = V_UINT64_C(932838457459459);
+ * \endcode
+ * \see V_UINT64_C(), vint64 и vulonglong
+ */
+/*!
+ * \typedef vuintptr
+ * Синоним для беззнакового целого. На 32-битных платформах
+ * это равносильно vuint32. На 64-битных платформа равносильно vuint64.
+ * \see vptrdiff, vuint32 и vuint64
+ */
+/*!
+ * \typedef vulonglong
+ * Синоним для <tt> unsigned long long int</tt>. Равносильно vuint64.
+ * \see vuint64 и vlonglong
+ */
+/*!
+ * \typedef uchar
+ * Удобный синоним для <tt>unsigned char</tt>.
+ */
+/*!
+ * \typedef uint
+ * Удобный синоним для <tt>unsigned int</tt>.
+ */
+/*!
+ * \typedef ulong
+ * Удобный синоним для <tt>unsigned long</tt>.
+ */
+/*!
+ * \typedef ushort
+ * Удобный синоним для <tt>unsigned short</tt>.
+ */
+
+/*!
+ * Печатает критическое сообщение об ошибке на стандартный
+ * поток ошибок (stderr). Аргументы функции такие же как
+ * у стандратной C-функции printf().
+ * \code
+ * char *filename = "myfile";
+ * FILE *file = fopen(filename, "r");
+ * if(file == NULL)
+ *     vCritical("File %s not open", filename);
+ * \endcode
+ * \see vDebug(), vWarning() и vFatal()
+ */
 void vCritical(const char *msg, ... )
 {
     va_list format;
@@ -173,6 +275,20 @@ void vCritical(const char *msg, ... )
     va_end(format);
 }
 
+/*!
+ * Печатает сообщение об ошибке на стандратный поток
+ * ошибок (stderr) и завершает выполнение программы.
+ * Функция принимает аргументы, аналогичные printf().
+ * \code
+ * int divide(int a, int b)
+ * {
+ *     if(b == 0)
+ *         vFatal("divide: cannot divide by zero");
+ *     return a / b;
+ * }
+ * \endcode
+ * \see vDebug(), vCritical() и vWarning()
+ */
 void vFatal(const char *msg, ... )
 {
     va_list format;
@@ -184,6 +300,19 @@ void vFatal(const char *msg, ... )
     abort(); // прекращаем выполнение программы
 }
 
+/*!
+ * Печатает предупреждающее сообщение \a msg на стандартный
+ * поток ошибок (stderr). Функция принимает аргументы, аналогичные
+ * printf().\n Пример:
+ * \code
+ * void f(int c)
+ * {
+ *     if( c > 200 )
+ *         vWarning("f: bad argument, c == %d", c);
+ * }
+ * \endcode
+ * \see vDebug(), vCritical() и vFatal()
+ */
 void vWarning(const char *msg, ... )
 {
     va_list format;
@@ -194,6 +323,15 @@ void vWarning(const char *msg, ... )
     va_end(format);
 }
 
+/*!
+ * Выводит отладочную информацию \a msg на стандартный
+ * поток ошибок (stderr). Функция принимает аргументы,
+ * аналогичные printf().
+ * \code
+ * vDebug("Items in list: %d", myList.size());
+ * \endcode
+ * \see vWarning(), vCritical() и vFatal()
+ */
 void vDebug(const char *msg, ... )
 {
     va_list format;
@@ -203,3 +341,6 @@ void vDebug(const char *msg, ... )
     fprintf(stderr, "\n");
     va_end(format);
 }
+
+/*! \} */
+

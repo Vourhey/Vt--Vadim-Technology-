@@ -4,8 +4,8 @@
 #include <stdlib.h>
 #include <cstring>
 
-#define VT_VERSION 0x000001
-#define VT_VERSION_STR "0.0.1"
+#define VT_VERSION 0x000100
+#define VT_VERSION_STR "0.1.0"
 
 inline const char *vVersion() { return VT_VERSION_STR; }
 
@@ -26,7 +26,7 @@ typedef unsigned long          ulong;
 typedef unsigned short         ushort;
 
 #define V_INT64_C(literal) literal ## LL
-#define V_UINT64_C(literal) literat ## UL 
+#define V_UINT64_C(literal) literat ## ULL 
 
 /*! \cond */
 // служенбный класс. Размер целого
@@ -93,7 +93,7 @@ public:
     inline VFlags operator~() const { return VFlags(~i); }
 };
 
-#define V_DECLARE_FLAGS(Flags, Enum) typedef VFlags<Enum> Flags;
+#define V_DECLARE_FLAGS(Flags,Enum) typedef VFlags<Enum> Flags;
 #define V_DECLARE_OPERATORS_FOR_FLAGS(Flags) \
 inline VFlags<Flags::enum_type> operator|(Flags::enum_type f1, Flags::enum_type f2) \
 { return VFlags<Flags::enum_type>(f1) | f2; } \

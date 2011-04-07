@@ -375,13 +375,13 @@ VLinkedList<T> &VLinkedList<T>::operator+=(const VLinkedList<T> &other)
 }
 
 template<class T>
-typename VLinkedList<T>::iterator VLinkedList<T>::erase(typename VLinkedList<T>::iterator pos)
+typename VLinkedList<T>::iterator VLinkedList<T>::erase(iterator pos)
 {
     return erase(pos, pos+1);
 }
 
 template<class T>
-typename VLinkedList<T>::iterator VLinkedList<T>::erase(typename VLinkedList<T>::iterator begin, typename VLinkedList<T>::iterator end)
+typename VLinkedList<T>::iterator VLinkedList<T>::erase(iterator begin, iterator end)
 {
     Node *n = begin.i;
     while(n != end.i)
