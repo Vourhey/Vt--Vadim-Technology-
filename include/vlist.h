@@ -1,8 +1,10 @@
 #ifndef VLIST_H
 #define VLIST_H
 
+#include <list>
 #include "vglobal.h"
 #include "viterator.h"
+#include "vvector.h"
 
 template<class T>
 class VList
@@ -68,6 +70,10 @@ public:
     T value(int i) const { return value(i, T()); }
 
     void reserve(int alloc);
+
+    void move(int from, int to);
+    void replace(int i, const T &value);
+    void swap(int i, int j);
 
     class iterator;
     class const_iterator
@@ -146,6 +152,53 @@ public:
     iterator end() { return d->data+d->size; }
     const_iterator end() const { return d->data+d->size; }
 
+    std::list<T> toStdList() const
+    {
+	std::list<T> ls;
+	ls.resize(size());
+
+	iterator it = begin();
+	while(it != end())
+	{
+	    ls.push_back(*it);
+	    ++it;
+	}
+	return ls;
+    }
+
+    VVector<T> toVector() const
+    {
+	VVector<T> vec;
+	vec.reserve(size());
+
+	for(iterator it = begin(); it!=end(); ++it)
+	    vec.append(*it);
+
+	return vec;
+    }
+
+    static VList<T> fromStdList(const std::list<T> &list)
+    {
+	VList<T> l;
+	l.reserve(list.size());
+
+	typename std::list<T>::iterator it = list.begin();
+	for(; it!=list.end(); ++it)
+	    l.append(*it);
+	return l;
+    }
+
+    static VList<T> fromVector(const VVector<T> &vector)
+    {
+	VList<T> l;
+	l.reserve(vector.size());
+
+	for(int i=0; i<vector.size(); i++)
+	    l.append(vecotr[i]);
+
+	return l;
+    }
+
     // STL comfort
     inline T &back() { return last(); }
     inline const T &back() const { return last(); }
@@ -182,6 +235,17 @@ public:
 
     T &operator[](int i) { return *d->data[i].v; }
     const T &operator[](int i) const { return at(i); }
+
+    VList<T> &operator=(const VList<T> &other)
+    {
+	free(d);
+	d = (VListData*)malloc(sizeof(VListData)+other.size()*sizeof(T));
+	d->data = d->array;
+	
+	for(int i=0; i<other.size(); ++i)
+	    d->data[i] = other.d->data[i];
+	return *this;
+    }
 
 private:
     struct Node
@@ -424,6 +488,35 @@ bool VList<T>::operator==(const VList<T> &other) const
 	if(*d->data[i].v != *other.d->data[i].v)
 	    return false;
     return true;
+}
+
+template<class T>
+void VList<T>::move(int from, int to)
+{
+    if(from<0 || from>d->size) return;
+    if(to<0   || to>d->size)   return;
+
+    Node tmp = d->data[from];
+    memmove(d->data+from, d->data+from+1, (to-from)*sizeof(Node));
+    d->data[to] = tmp;
+}
+
+template<class T>
+void VList<T>::replace(int i, const T &value)
+{
+    if(i<0 || i>d->size) return;
+    d->data[i].v = new T(value);
+}
+
+template<class T>
+void VList<T>::swap(int i, int j)
+{
+    if(i<0 || i>d->size) return;
+    if(j<0 || j>d->size) return;
+
+    Node tmp = d->data[i];
+    d->data[i] = d->data[j];
+    d->data[j] = tmp;
 }
 
 DEFINE_READONLY_ITERATOR_FOR_C(List)

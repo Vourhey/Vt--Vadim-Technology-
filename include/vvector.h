@@ -1,8 +1,10 @@
 #ifndef VVECTOR_H
 #define VVECTOR_H
 
+#include <vector>
 #include "vglobal.h"
 #include "viterator.h"
+#include "vlist.h"
 
 template<class T>
 class VVector
@@ -15,6 +17,7 @@ public:
     typedef T&       reference;
     typedef int      size_type;
     typedef T        value_type;
+    typedef vptrdiff difference_type;
     typedef const T* const_iterator;
     typedef T*       iterator;
     // and Vt...
@@ -78,6 +81,8 @@ public:
     T value(int i, const T &defaultValue) const
 	{ if(i>-1 && i<d->size) return d->data[i]; return defaultValue;}
 
+    void squeeze();
+
     // for STL
     reference back() { return d->data[d->size-1]; }
     const_reference back() const { return at(d->size-1); }
@@ -106,6 +111,42 @@ public:
     void push_back(const T &value) { append(value); }
     void push_front(const T &value) { prepend(value); }
 
+    VList<T> toList() const
+    {
+	VList<T> l;
+	l.reserve(d->size);
+
+	for(iterator it = begin(); it != end(); ++it)
+	    l.append(*it);
+
+	return l;
+    }
+
+    std::vector<T> toStdVector() const
+    {
+	return std::vector<T>(d->data, d->data+d->size-1);
+    }
+    
+    static VVector<T> fromList(const VList<T> &list)
+    {
+	VVector<T> vec;
+	vec.reserve(list.size());
+	VListIterator<T> it(list);
+	while(it.hasNext())
+	    vec.append(it.next());
+	return vec;
+    }
+
+    static VVector<T> fromStdVector(const std::vector<T> &vector)
+    {
+	VVector<T> vec;
+	vec.reserve(vector.size());
+	typename std::vector<T>::const_iterator it = vector.begin();
+	for(; it != vector.end(); ++it)
+	    vec.append(*it);
+	return vec;
+    }
+
     // operators
     bool operator!=(const VVector<T> &other) const
 	{ return !operator==(other); }
@@ -119,6 +160,7 @@ public:
     VVector<T> &operator<<(const T &value) { append(value); return *this; }
     VVector<T> &operator<<(const VVector<T> &other)
 	{ return operator+=(other); }
+    VVector<T> &operator=(const VVector<T> &other);
 
 private:
     void reallocData(int nsize);
@@ -348,6 +390,34 @@ typename VVector<T>::iterator VVector<T>::insert(iterator before, int count, con
     int b = int(before - d->data);
     insert(b, count, value);
     return d->data+b;
+}
+
+template<class T>
+void VVector<T>::squeeze()
+{
+    if(d->alloc == d->size)
+	return;
+
+    Data *x = (Data*)malloc(sizeof(Data)+d->size*sizeof(T));
+    x->size = d->size;
+    x->alloc = d->size;
+    x->data = x->array;
+
+    memcpy(x->data, d->data, d->size*sizeof(T));
+    free(d);
+    d = x;
+}
+
+template<class T>
+VVector<T> &VVector<T>::operator=(const VVector<T> &other)
+{
+    free(d);
+    reserve(other.size());
+    d->size = other.size();
+
+    for(int i=0; i<d->size; i++)
+	d->data[i] = other[i];
+    return *this;
 }
 
 DEFINE_READONLY_ITERATOR_FOR_C(Vector)

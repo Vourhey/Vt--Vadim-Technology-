@@ -1,6 +1,7 @@
 #ifndef VLINKEDLIST_H
 #define VLINKEDLIST_H
 
+#include <list>
 #include "viterator.h"
 
 template<class T>
@@ -10,6 +11,7 @@ class VLinkedList
 public:
     typedef const T *      const_pointer;
     typedef const T &      const_reference;
+    typedef vptrdiff       difference_type;
     typedef T *            pointer;
     typedef T &            reference;
     typedef int            size_type;
@@ -144,6 +146,31 @@ public:
     iterator erase(iterator pos);
     iterator erase(iterator begin, iterator end);
     iterator insert(iterator before, const T &value);
+
+    std::list<T> toStdList() const
+    {
+	std::list<T> ls;
+	ls.resize(size());
+
+	iterator it = begin();
+	while(it != end())
+	{
+	    ls.push_back(*it);
+	    ++it;
+	}
+	return ls;
+    }
+
+    static VLinkedList<T> fromStdList(const std::list<T> &list)
+    {
+	VLinkedList<T> ll;
+
+	typename std::list<T>::const_iterator it = list.begin();
+	for(; it != list.end(); ++it)
+	    ll.append(*it);
+
+	return ll;
+    }
 
     // STL comfort
     T &back() { return _end->value; }

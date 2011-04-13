@@ -137,7 +137,7 @@ vint64 VBuffer::readData(char *data, vint64 maxSize)
 
 vint64 VBuffer::writeData(const char *data, vint64 maxSize)
 {
-    d_f()->ba->insert(d->pos, data, len);
-    return len;
+    d_f()->ba->insert(d->pos, data, maxSize);
+    return maxSize;
 }
 
