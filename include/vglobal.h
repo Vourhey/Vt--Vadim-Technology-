@@ -97,7 +97,7 @@ public:
 #define V_DECLARE_OPERATORS_FOR_FLAGS(Flags) \
 inline VFlags<Flags::enum_type> operator|(Flags::enum_type f1, Flags::enum_type f2) \
 { return VFlags<Flags::enum_type>(f1) | f2; } \
-inline VFlags<Flags::enum_type> operator|(Flags::enum_type f1, VFlags<FLags::enum_type> f2) \
+inline VFlags<Flags::enum_type> operator|(Flags::enum_type f1, VFlags<Flags::enum_type> f2) \
 { return f2 | f1; }
 
 // Debug output

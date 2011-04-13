@@ -10,7 +10,9 @@ OBJECTS = .obj/vpoint.o     \
 	  .obj/vbytearray.o \
 	  .obj/vline.o      \
 	  .obj/vdatetime.o  \
-	  .obj/vglobal.o
+	  .obj/vglobal.o    \
+	  .obj/viodevice.o  \
+	  .obj/vbuffer.o
 SOURCES = src/vbytearray.cpp   \
 	  src/vdatetime.cpp    \
 	  src/vglobal.cpp      \
@@ -21,7 +23,9 @@ SOURCES = src/vbytearray.cpp   \
 	  src/vpoint.cpp       \
 	  src/vsize.cpp        \
 	  src/vstack.cpp       \
-	  src/vlist.cpp
+	  src/vlist.cpp        \
+	  src/viodevice.cpp    \
+	  src/vbuffer.cpp
 HEADERS = include/valgorithms.h  \
 	  include/vdatetime.h    \
 	  include/viterator.h    \
@@ -35,7 +39,9 @@ HEADERS = include/valgorithms.h  \
       	  include/vlist.h        \
    	  include/vpoint.h       \
 	  include/vsize.h        \
-	  include/vvector.h
+	  include/vvector.h      \
+	  include/viodevice.h    \
+	  include/vbuffer.h
 
 all: $(OBJECTS) $(SOURCES) $(HEADERS) $(TARGET)
 
@@ -59,6 +65,12 @@ $(OUT_DIR)/vdatetime.o: src/vdatetime.cpp include/vdatetime.h
 
 $(OUT_DIR)/vglobal.o: src/vglobal.cpp include/vglobal.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) src/vglobal.cpp -o $(OUT_DIR)/vglobal.o
+
+$(OUT_DIR)/viodevice.o: src/viodevice.cpp include/viodevice.h include/private/viodevice_p.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) src/viodevice.cpp -o $(OUT_DIR)/viodevice.o
+
+$(OUT_DIR)/vbuffer.o: src/vbuffer.cpp include/vbuffer.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) src/vbuffer.cpp -o $(OUT_DIR)/vbuffer.o
 
 test: $(TARGET) main.cpp
 	$(CXX) $(CXXFLAGS) main.cpp $(TARGET) $(INCPATH) -o test
