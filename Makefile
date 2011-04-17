@@ -12,7 +12,9 @@ OBJECTS = .obj/vpoint.o     \
 	  .obj/vdatetime.o  \
 	  .obj/vglobal.o    \
 	  .obj/viodevice.o  \
-	  .obj/vbuffer.o
+	  .obj/vbuffer.o    \
+	  .obj/vchar.o      \
+	  .obj/vstring.o
 SOURCES = src/vbytearray.cpp   \
 	  src/vdatetime.cpp    \
 	  src/vglobal.cpp      \
@@ -25,7 +27,9 @@ SOURCES = src/vbytearray.cpp   \
 	  src/vstack.cpp       \
 	  src/vlist.cpp        \
 	  src/viodevice.cpp    \
-	  src/vbuffer.cpp
+	  src/vbuffer.cpp      \
+	  src/vchar.cpp        \
+	  src/vstring.cpp
 HEADERS = include/valgorithms.h  \
 	  include/vdatetime.h    \
 	  include/viterator.h    \
@@ -41,7 +45,9 @@ HEADERS = include/valgorithms.h  \
 	  include/vsize.h        \
 	  include/vvector.h      \
 	  include/viodevice.h    \
-	  include/vbuffer.h
+	  include/vbuffer.h      \
+	  include/vchar.h        \
+	  include/vstring.h
 
 all: $(OBJECTS) $(SOURCES) $(HEADERS) $(TARGET)
 
@@ -71,6 +77,12 @@ $(OUT_DIR)/viodevice.o: src/viodevice.cpp include/viodevice.h include/private/vi
 
 $(OUT_DIR)/vbuffer.o: src/vbuffer.cpp include/vbuffer.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) src/vbuffer.cpp -o $(OUT_DIR)/vbuffer.o
+
+$(OUT_DIR)/vchar.o: src/vchar.cpp src/vunicodetables.cpp include/vchar.h include/private/vunicodetables_p.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) src/vchar.cpp -o $(OUT_DIR)/vchar.o
+
+$(OUT_DIR)/vstring.o: src/vstring.cpp include/vstring.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) src/vstring.cpp -o $(OUT_DIR)/vstring.o
 
 test: $(TARGET) main.cpp
 	$(CXX) $(CXXFLAGS) main.cpp $(TARGET) $(INCPATH) -o test

@@ -123,4 +123,6 @@ template<class T> inline T *v_check_ptr(T *p) { V_CHECK_PTR(p); return p; }
 #define V_FOREVER for(;;)
 #define forever for(;;)
 
+#include "namespace.h"
+
 #endif

@@ -1264,8 +1264,8 @@ VByteArray &VByteArray::setNum(double n, int prec)
  * \overload \n Возвращает \c true, если строка \a a1
  * больше или равна массива \a a2. Иначе \c false.
  */
+
 /*!
- * \fn VByteArray::operator const char *() const
  * Возвращает указатель на данные, хранящиеся в массиве.
  * Данные ограничены '\0'-символом. Указатель действителен так
  * долго, пока не будет перевыделена память.
@@ -1274,8 +1274,12 @@ VByteArray &VByteArray::setNum(double n, int prec)
  * Если вы объявете #VT_NO_CAST_FROM_BYTEARRAY, то отключите этот оператор.
  * \see constData()
  */
+VByteArray::operator const char *() const
+{
+    return d->str;
+}
+
 /*!
- * \fn VByteArray::operator const void *() const
  * Возвращает указатель на данные, хранящиеся в массиве.
  * Данные ограничены '\0'-символом. Указатель действителен
  * так долго, пока не будет перевыделена память.
@@ -1284,4 +1288,8 @@ VByteArray &VByteArray::setNum(double n, int prec)
  * или <tt>const void *</tt>.
  * \see constData()
  */
+VByteArray::operator const void *() const
+{
+    return d->str;
+}
 

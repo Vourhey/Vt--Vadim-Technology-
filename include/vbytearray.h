@@ -100,8 +100,8 @@ public:
     int size() const   { return d->size; }
 
 #ifndef VT_NO_CAST_FROM_BYTEARRAY
-    inline operator const char *() const { return d->str; }
-    inline operator const void *() const { return d->str; }
+    operator const char *() const;
+    operator const void *() const;
 #endif
 
     VByteArray toBase64() const;

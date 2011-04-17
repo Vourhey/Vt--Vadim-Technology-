@@ -1,6 +1,6 @@
 #include "vchar.h"
 
-#include "vunicodetables_p.h"
+#include "private/vunicodetables_p.h"
 
 #include "vunicodetables.cpp"
 
@@ -84,7 +84,7 @@ bool VChar::isLetterOrNumber() const
     return FLAG(qGetProp(ucs)->category) & test;
 }
 
-
+/*! Возвращает \c true, если символ - числовой */ 
 bool VChar::isDigit() const
 {
     return (qGetProp(ucs)->category == Number_DecimalDigit);
@@ -204,6 +204,7 @@ enum {
     Hangul_NCount = 21*28
 };
 
+/*
 // buffer has to have a length of 3. It's needed for Hangul decomposition
 static const unsigned short *  decompositionHelper
     (uint ucs4, int *length, int *tag, unsigned short *buffer)
@@ -228,7 +229,7 @@ static const unsigned short *  decompositionHelper
     *tag = (*decomposition) & 0xff;
     *length = (*decomposition) >> 8;
     return decomposition+1;
-}
+} */
 
 /*!
     Decomposes a character into its parts. Returns an empty string if
@@ -472,7 +473,7 @@ static void decomposeHelper(QString *str, bool canonical, VChar::UnicodeVersion 
     }
 } */
 
-
+/*
 static ushort ligatureHelper(ushort u1, ushort u2)
 {
     // hangul L-V pair
@@ -502,7 +503,7 @@ static ushort ligatureHelper(ushort u1, ushort u2)
         if (ligatures[2*i] == u1)
             return ligatures[2*i+1];
     return 0;
-}
+} */
 /*
 static void composeHelper(QString *str, int from)
 {

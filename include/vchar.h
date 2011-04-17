@@ -256,10 +256,10 @@ public:
 
     //static QString  decomposition(uint ucs4);
 
-
-private:
     VChar(char c);
     VChar(uchar c);
+private:
+
     ushort ucs;
 };
 
