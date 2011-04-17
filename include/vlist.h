@@ -6,6 +6,8 @@
 #include "viterator.h"
 #include "vvector.h"
 
+template<class T> class VVector;
+
 template<class T>
 class VList
 {
@@ -194,7 +196,7 @@ public:
 	l.reserve(vector.size());
 
 	for(int i=0; i<vector.size(); i++)
-	    l.append(vecotr[i]);
+	    l.append(vector[i]);
 
 	return l;
     }
