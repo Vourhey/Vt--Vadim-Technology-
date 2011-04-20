@@ -52,13 +52,19 @@ public:
 
     VString &append(const VString &str);
     VString &append(const VLatin1String &str);
-
 #ifndef VT_NO_CAST_FROM_ASCII
     VString &append(const VByteArray &ba);
     VString &append(const char *str) { return append(VLatin1String(str)); }
 #endif
-
     VString &append(VChar ch);
+
+    VString &prepend(const VString &str);
+    VString &prepend(const VLatin1String &str);
+#ifndef VT_NO_CAST_FROM_ACSII
+    VString &prepend(const VByteArray &ba);
+    VString &prepend(const char *str) { return prepend(VLatin1String(str)); }
+#endif
+    VString &prepend(VChar ch);
 
     const VChar at(int position) const;
     const VChar *constData() const { return d->data; }
@@ -91,6 +97,8 @@ public:
         { return compare(*this, other, Vt::CaseSensitive); }
     int compare(const VString &other, Vt::CaseSensitivity cs) const
 	{ return compare(*this, other, cs); }
+    int compare(const VLatin1String &other, Vt::CaseSensitivity cs = Vt::CaseSensitive) const
+	{ return compare(*this, other, cs); }
 
     bool contains(const VString &str, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
     bool contains(VChar ch, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
@@ -98,10 +106,38 @@ public:
     int count(const VString &str, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
     int count(VChar ch, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
     int count() const { return d->_s; }
+    int length() const { return d->_s; }
+    int size() const { return d->_s; }
 
     int indexOf(const VString &str, int from = 0, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
     int indexOf(const VLatin1String &str, int from = 0, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
     int indexOf(VChar ch, int from = 0, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
+
+    int lastIndexOf(const VString &str, int from = -1, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
+    int lastIndexOf(const VLatin1String &str, int from = -1, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
+    int lastIndexOf(VChar ch, int from = -1, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
+
+    VString &insert(int position, const VString &str)
+	{ return insert(position, str.d->data, str.d->_s); }
+    VString &insert(int position, const VChar *unicode, int size);
+    VString &insert(int position, const VLatin1String &str);
+    VString &insert(int position, VChar ch);
+
+    VString &remove(int position, int n);
+    VString &remove(VChar ch, Vt::CaseSensitivity cs = Vt::CaseSensitive);
+    VString &remove(const VString &str, Vt::CaseSensitivity cs = Vt::CaseSensitive);
+
+    VString repeated(int times) const;
+
+    VString &replace(int position, int n, const VString &after)
+	{ return replace(position, n, after.d->data, after.d->_s); }
+    VString &replace(int position, int n, const VChar *unicode, int size);
+    VString &replace(int position, int n, VChar after)
+	{ return replace(position, n, &after, 1); }
+
+    inline bool isEmpty() const { return d->_s == 0; }
+    inline void reserve(int size) { reallocData(size); }
+    inline void resize(int size) { reallocData(size); d->_s = size; }
 
     // operators
     VChar &operator[](int position);
@@ -109,9 +145,16 @@ public:
     VChar &operator[](uint position);
     const VChar operator[](uint position) const;
 
+    // for STL
+    void push_back(const VString &other) { append(other); }
+    void push_back(VChar ch)             { append(ch); }
+    void push_front(const VString &other) { prepend(other); }
+    void push_front(VChar ch)             { prepend(ch); }
+
 #ifndef VT_NO_CAST_TO_ASCII
     operator const char *() const;
 #endif
+    const VChar *unicode() const { return reinterpret_cast<const VChar*>(d->data); }
 
 private:
     void reallocData(int size);

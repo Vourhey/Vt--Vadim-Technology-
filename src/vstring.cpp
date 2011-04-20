@@ -17,6 +17,66 @@ VLatin1String &VLatin1String::operator=(const VLatin1String &other)
     return *this;
 }
 
+bool VLatin1String::operator!=(const VString &other) const
+{
+    return VString::compare(*this, other);
+}
+
+bool VLatin1String::operator!=(const char *other) const
+{
+    return vstrcmp(data, other);
+}
+
+bool VLatin1String::operator<(const VString &other) const
+{
+    return VString::compare(*this, other) < 0;
+}
+
+bool VLatin1String::operator<(const char *other) const
+{
+     return vstrcmp(data, other) < 0;
+}
+
+bool VLatin1String::operator<=(const VString &other) const
+{
+    return VString::compare(*this, other) <= 0;
+}
+
+bool VLatin1String::operator<=(const char *other) const
+{
+    return vstrcmp(data, other) <= 0;
+}
+
+bool VLatin1String::operator==(const VString &other) const
+{
+    return !VString::compare(*this, other);
+}
+
+bool VLatin1String::operator==(const char *other) const
+{
+    return !vstrcmp(data, other);
+}
+
+bool VLatin1String::operator>(const VString &other) const
+{
+    return VString::compare(*this, other) > 0;
+}
+
+bool VLatin1String::operator>(const char *other) const
+{
+    return vstrcmp(data, other) > 0;
+}
+
+bool VLatin1String::operator>=(const VString &other) const
+{
+    return VString::compare(*this, other) >= 0;
+}
+
+bool VLatin1String::operator>=(const char *other) const
+{
+    return vstrcmp(data, other) >= 0;
+}
+
 #define null VChar(VChar::Null)
 
 int vustrlen(const VChar *u)
@@ -99,6 +159,7 @@ void VString::reallocData(int size)
 	d->_s = 0;
 	d->_alloc = size;
 	d->data = d->array;
+	d->data[size] = null;
     }
     else if(size > d->_alloc)
     {
@@ -106,6 +167,7 @@ void VString::reallocData(int size)
 	x->_s = d->_s;
 	x->_alloc = size;
 	x->data = x->array;
+	x->data[size] = null;
 	memcpy(x->data, d->data, sizeof(VChar)*d->_s);
 
 	free(d);
@@ -246,7 +308,7 @@ VByteArray VString::toLatin1() const
     VByteArray ba;
     ba.reserve(d->_s);
 
-    for(int i=0; i<=d->_s; ++i)
+    for(int i=0; i<d->_s; ++i)
 	ba[i] = d->data[i].toLatin1();
     return ba;
 }
@@ -474,3 +536,224 @@ bool VString::endsWith(const VChar &c, Vt::CaseSensitivity cs) const
 
     return d->data[d->_s] == c;
 }
+
+VString &VString::insert(int position, const VLatin1String &str)
+{
+    if(position<0 || position>d->_s)
+    {
+	vWarning("VString::insert(): position is %d\nNo inserted", position);
+	return *this;
+    }
+
+    int l = vstrlen(str.latin1());
+    reallocData(d->_s+l);
+
+    memmove(d->data+position+l, d->data+position, sizeof(VChar)*(d->_s-position));
+
+    for(int i=0; i<l; i++)
+    	d->data[position+i] = VChar(str.latin1()[i]);
+    
+    d->_s += l;
+    return *this;
+}
+
+VString &VString::insert(int position, const VChar *unicode, int size)
+{
+    if(position<0 || position>d->_s)
+    {
+	vWarning("VString::insert(): position is %d\nNo inserted", position);
+	return *this;
+    }
+
+    reallocData(d->_s + size);
+
+    memmove(d->data+position+size, d->data+position, sizeof(VChar)*size);
+    memcpy(d->data+position, unicode, size);
+    d->_s += size;
+
+    return *this;
+}
+
+VString &VString::insert(int position, VChar ch)
+{
+    if(position<0 || position>d->_s)
+    {
+	vWarning("VString::insert(): position is %d\nNo inserted", position);
+	return *this;
+    }
+
+    reallocData(++d->_s);
+
+    memmove(d->data+position+1, d->data+position, sizeof(VChar));
+    d->data[position] = ch;
+
+    return *this;
+}
+
+VString &VString::prepend(const VString &str)
+{
+    reallocData(d->_s + str.d->_s);
+
+    memmove(d->data+str.d->_s, d->data, sizeof(VChar)*d->_s);
+    memcpy(d->data, str.d->data, sizeof(VChar)*str.d->_s);
+
+    d->_s += str.d->_s;
+    return *this;
+}
+
+VString &VString::prepend(const VByteArray &ba)
+{
+    return prepend(ba.constData());
+}
+
+VString &VString::prepend(const VLatin1String &str)
+{
+    int l = vstrlen(str.latin1());
+    reallocData(d->_s + l);
+    
+    memmove(d->data+l, d->data, sizeof(VChar)*d->_s);
+    
+    for(int i=0; i<l; ++i)
+	d->data[i] = VChar(str.latin1()[i]);
+
+    d->_s += l;
+
+
+    return *this;
+}
+
+VString &VString::prepend(VChar ch)
+{
+    reallocData(d->_s + 1);
+    memmove(d->data+1, d->data, sizeof(VChar));
+    d->data[0] = ch;
+    ++d->_s;
+    return *this;
+}
+
+int VString::lastIndexOf(const VString &str, int from, Vt::CaseSensitivity cs) const
+{
+    if(from == -1) from = d->_s - str.d->_s;
+
+    for(int i=from; i>-1; --i)
+    {
+	if(cs == Vt::CaseInsensitive)
+	{
+	    if(!vustrincmp(d->data+i, str.d->data, str.d->_s))
+		return i;
+	    else
+		continue;
+	}
+
+	if(!vustrncmp(d->data+i, str.d->data, str.d->_s))
+	    return i;
+    }
+    return -1;
+}
+
+int VString::lastIndexOf(const VLatin1String &str, int from, Vt::CaseSensitivity cs) const
+{
+    int l = vstrlen(str.latin1());
+    const char *data = toLatin1().constData();
+    if(from == -1) from = d->_s - l;
+
+    for(int i=from; i>-1; --i)
+    {
+	if(cs == Vt::CaseInsensitive)
+	{
+	    if(!vstrnicmp(data+i, str.latin1(), l))
+		return i;
+	    else
+		continue;
+	}
+
+	if(!vstrncmp(data+i, str.latin1(), l))
+	    return i;
+    }
+
+    return -1;
+}
+
+int VString::lastIndexOf(VChar ch, int from, Vt::CaseSensitivity cs) const
+{
+    VChar up = ch.toUpper();
+    if(from == -1) from = d->_s - 1;
+
+    for(int i=from; i>-1; --i)
+    {
+	if(cs == Vt::CaseInsensitive)
+	{
+	    if(d->data[i].toUpper() == up)
+		return i;
+	    else
+		continue;
+	}
+
+	if(d->data[i] == ch)
+	    return i;
+    }
+    return -1;
+}
+
+VString &VString::remove(int position, int n)
+{
+    if(position<0 || position>d->_s)
+    {
+	vWarning("VString::remove(): position is %d\nNo remove", position);
+	return *this;
+    }
+
+    memmove(d->data+position, d->data+position+n, sizeof(VChar)*(d->_s-position-n));
+    d->_s -= n;
+    return *this;
+}
+
+VString &VString::remove(VChar ch, Vt::CaseSensitivity cs)
+{
+    int pos = indexOf(ch, 0, cs);
+
+    while(pos != -1)
+    {
+	remove(pos, 1);
+	pos = indexOf(ch, pos+1, cs);
+    }
+
+    return *this;
+}
+
+VString &VString::remove(const VString &str, Vt::CaseSensitivity cs)
+{
+    int len = str.size();
+    int pos = indexOf(str, 0, cs);
+
+    while(pos != -1)
+    {
+	remove(pos, len);
+	pos = indexOf(str, pos+1, cs);
+    }
+
+    return *this;
+}
+
+VString VString::repeated(int times) const
+{
+    VString tmp;
+    tmp.reserve(times*d->_s);
+
+    while(times--)
+        tmp.append(*this);
+
+    return tmp;
+}
+
+VString &VString::replace(int position, int n, const VChar *unicode, int size)
+{
+    int len = d->_s - n + size;
+    reallocData(len);
+
+    memmove(d->data+position+size, d->data+position+n, sizeof(VChar)*(d->_s-position-n));
+    memcpy(d->data+position, unicode, sizeof(VChar)*size);
+    d->_s = len;
+    return *this;
+}
+

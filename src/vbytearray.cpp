@@ -57,12 +57,7 @@ char *vstrncpy(char *dst, const char *str, uint len)
 
 int vstrnicmp(const char *str1, const char *str2, uint len)
 {
-    int l1 = vstrlen(str1);
-    int l2 = vstrlen(str2);
-
-    if(l1 != l2) return l1 - l2;
-
-    for(uint i = 0; i<len; i++)
+    for(uint i = 0; i<len; ++i)
     {
 	char c1 = toupper(str1[i]);
 	char c2 = toupper(str2[i]);
@@ -146,6 +141,7 @@ void VByteArray::reallocData(int size)
 	d->str = d->array;
 	d->size = 0;
 	d->alloc = size;
+	d->str[size] = '\0';
     }
     else if(size > d->alloc)
     {
@@ -154,6 +150,7 @@ void VByteArray::reallocData(int size)
 	x->alloc = size;
 	memcpy(x->str, d->str, d->size);
 	x->size = d->size;
+	x->str[size] = '\0';
 	free(d);
 	d = x;
     }
