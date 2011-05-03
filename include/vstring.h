@@ -3,9 +3,13 @@
 
 #include "vglobal.h"
 #include "vchar.h"
+#include <string>
 
 class VString;
 class VByteArray;
+class VStringList;
+class string;
+typedef std::basic_string<wchar_t> VStdWString;
 
 class VLatin1String
 {
@@ -86,6 +90,9 @@ public:
     bool endsWith(const VString &s, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
     bool endsWith(const VLatin1String &s, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
     bool endsWith(const VChar &c, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
+    bool startsWith(const VString &s, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
+    bool startsWith(const VLatin1String &s, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
+    bool startsWith(const VChar &c, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
 
     static int compare(const VString &s1, const VString &s2, Vt::CaseSensitivity cs);
     static int compare(const VString &s1, const VString &s2)
@@ -134,10 +141,40 @@ public:
     VString &replace(int position, int n, const VChar *unicode, int size);
     VString &replace(int position, int n, VChar after)
 	{ return replace(position, n, &after, 1); }
+    VString &replace(const VChar *before, int blen, const VChar *after, int alen, Vt::CaseSensitivity cs = Vt::CaseSensitive);
+    VString &replace(const VString &before, const VString &after, Vt::CaseSensitivity cs = Vt::CaseSensitive)
+	{ return replace(before.unicode(), before.size(), after.unicode(), after.size(), cs); }
+    VString &replace(VChar before, const VString &after, Vt::CaseSensitivity cs = Vt::CaseSensitive)
+	{ return replace(&before, 1, after.unicode(), after.size(), cs); }
+    VString &replace(VChar before, VChar after, Vt::CaseSensitivity cs = Vt::CaseSensitive)
+	{ return replace(&before, 1, &after, 1, cs); }
+
+    VString &setRawData(const VChar *unicode, int size);
+    VString &setUnicode(const VChar *unicode, int size);
+    VString &setUtf16(const ushort *unicdoe, int size);
 
     inline bool isEmpty() const { return d->_s == 0; }
     inline void reserve(int size) { reallocData(size); }
     inline void resize(int size) { reallocData(size); d->_s = size; }
+
+    VString left(int n) const;
+    VString right(int n) const;
+    VString mid(int position, int n = -1) const;
+
+    enum SplitBehavior
+    {
+	KeepEmptyParts = 0,
+	SkipEmptyParts = 1
+    };
+
+    VStringList split(const VString &sep, SplitBehavior behavior = KeepEmptyParts, Vt::CaseSensitivity cs = Vt::CaseSensitive) const;
+
+    VString toLower() const;
+    VString toUpper() const;
+
+    std::string toStdString() const;
+    VStdWString toStdWString() const;
+    int toWCharArray (wchar_t *array) const;
 
     // operators
     VChar &operator[](int position);
@@ -155,6 +192,7 @@ public:
     operator const char *() const;
 #endif
     const VChar *unicode() const { return reinterpret_cast<const VChar*>(d->data); }
+    const ushort *utf16() const { return reinterpret_cast<const ushort*>(d->data); }
 
 private:
     void reallocData(int size);

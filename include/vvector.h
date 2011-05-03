@@ -6,6 +6,8 @@
 #include "viterator.h"
 #include "vlist.h"
 
+template<class T> class VList;
+
 template<class T>
 class VVector
 {
@@ -131,9 +133,10 @@ public:
     {
 	VVector<T> vec;
 	vec.reserve(list.size());
-	VListIterator<T> it(list);
-	while(it.hasNext())
-	    vec.append(it.next());
+
+	for(int i=0; i<list.size(); ++i)
+	    vec.append(list[i]);
+
 	return vec;
     }
 
@@ -182,6 +185,7 @@ void VVector<T>::reallocData(int nsize)
     {
 	d = (Data*)malloc(sizeof(Data)+nsize*sizeof(T));
 	d->data = d->array;
+	d->data[0] = T();
 	d->size = 0;
 	d->alloc = nsize;
     }
@@ -193,6 +197,11 @@ void VVector<T>::reallocData(int nsize)
 	x->alloc = nsize;
 
 	::memcpy(x->data, d->data, d->size*sizeof(T));
+
+	// очищаю выделенную память... зачем?
+	for(int i=d->size; i<(nsize-d->size); ++i)
+	    x->data[i] = T();
+
 	free(d);
 	d = x;
     }

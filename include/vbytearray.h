@@ -18,6 +18,8 @@ int vvsnprintf(char *str, size_t n, const char *fmt, va_list ap);
 
 vuint16 vChecksum(const char *data, uint len);
 
+template<class T> class VList;
+
 // NR: реализовать более грамотное управление памятью
 // см. документацию по QString (Qt)
 class VByteArray
@@ -89,6 +91,15 @@ public:
     VByteArray &insert(int i, const char *str, int len);
     VByteArray &insert(int i, char ch);
 
+    VByteArray left(int len) const;
+    VByteArray leftJustified(int width, char fill = ' ', bool truncate = false) const;
+    VByteArray right(int len) const;
+    VByteArray rightJustified(int width, char fill = ' ', bool truncate = false) const;
+    VByteArray mid(int pos, int len = -1) const;
+
+    VByteArray toLower() const;
+    VByteArray toUpper() const;
+
     bool isEmpty() const { return d->size == 0; }
 
     int lastIndexOf(const VByteArray &ba, int from = -1) const
@@ -105,6 +116,10 @@ public:
 #endif
 
     VByteArray toBase64() const;
+    static VByteArray fromBase64(const VByteArray &base64);
+
+    VByteArray toHex() const;
+    static VByteArray fromHex(const VByteArray &hexEncoded);
 
     VByteArray &remove(int pos, int len);
     VByteArray repeated(int times) const;
@@ -127,8 +142,15 @@ public:
     VByteArray &replace(char before, const char *after);
     VByteArray &replace(char before, char after);
 
+    int capacity() const { return d->alloc; }
     void reserve(int size) { reallocData(size); }
     void resize(int size)  { if(size>d->size)reallocData(size); d->size = size; }
+    void squeeze();
+
+    VByteArray &setRawData(const char *data, uint size);
+
+    VByteArray simplified() const;
+    VList<VByteArray> split(char sep) const;
 
     VByteArray &setNum(int n, int base = 10)
 	{ return setNum(vlonglong(n), base); }

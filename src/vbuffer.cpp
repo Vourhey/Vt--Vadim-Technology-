@@ -6,7 +6,7 @@
 class VBufferPrivate : public VIODevicePrivate
 {
 public:
-    VBufferPrivate(VIODevice *dev) : VIODevicePrivate(dev) {}
+    VBufferPrivate(VIODevice *dev) : VIODevicePrivate(dev), ba(&defaultBuf) {}
 
     VByteArray *ba;
     VByteArray defaultBuf;
@@ -15,13 +15,13 @@ public:
 VBuffer::VBuffer()
     : VIODevice(new VBufferPrivate(this))
 {
-    d_f()->ba = &d_f()->defaultBuf;
 }
 
 VBuffer::VBuffer(VByteArray *byteArray)
     : VIODevice(new VBufferPrivate(this))
 {
-    d_f()->ba = byteArray ? byteArray : &d_f()->defaultBuf;
+    if(byteArray)
+	d_f()->ba = byteArray;
 }
 
 VBuffer::~VBuffer()

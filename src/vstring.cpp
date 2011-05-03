@@ -1,5 +1,6 @@
 #include "vstring.h"
 #include "vbytearray.h"
+#include "vstringlist.h"
 
 VLatin1String::VLatin1String(const char *str)
 {
@@ -185,7 +186,7 @@ VString::VString(const VChar *unicode, int size)
     d = 0;
     reallocData(size);
     d->_s = size;
-    for(int i =0; i<=size; ++i)
+    for(int i =0; i<size; ++i)
 	d->data[i] = unicode[i];
 }
 
@@ -377,17 +378,27 @@ int VString::compare(const VLatin1String &s1, const VString &s2, Vt::CaseSensiti
     return vstrcmp(s1.latin1(), ba.constData());
 }
 
-int VString::indexOf(const VString &str, int from, Vt::CaseSensitivity cs) const
+static int indexOf_helper(const VChar *s1, int size, const VChar *s2, int len, int from, Vt::CaseSensitivity cs)
 {
-    for(int i = from; i<=d->_s; ++i)
+    for(int i=from; i<size; ++i)
     {
 	if(cs == Vt::CaseInsensitive)
-	    if(!vustrincmp(d->data+i, str.d->data, str.d->_s))
+	{
+	    if(!vustrincmp(s1+i, s2, len))
 		return i;
-	if(!vustrncmp(d->data+i, str.d->data, str.d->_s))
+	    else
+		continue;
+	}
+
+	if(!vustrncmp(s1+i, s2, len))
 	    return i;
     }
     return -1;
+}
+
+int VString::indexOf(const VString &str, int from, Vt::CaseSensitivity cs) const
+{
+    return indexOf_helper(d->data, d->_s, str.d->data, str.d->_s, from, cs);
 }
 
 int VString::indexOf(const VLatin1String &str, int from, Vt::CaseSensitivity cs) const
@@ -755,5 +766,172 @@ VString &VString::replace(int position, int n, const VChar *unicode, int size)
     memcpy(d->data+position, unicode, sizeof(VChar)*size);
     d->_s = len;
     return *this;
+}
+
+VString &VString::replace(const VChar *before, int blen, const VChar *after, int alen, Vt::CaseSensitivity cs)
+{
+    int pos = indexOf_helper(d->data, d->_s, before, blen, 0, cs);
+
+    while(pos != -1)
+    {
+	replace(pos, blen, after, alen);
+	pos = indexOf_helper(d->data, d->_s, before, blen, pos+1, cs);
+    }
+
+    return *this;
+}
+
+bool VString::startsWith(const VString &s, Vt::CaseSensitivity cs) const
+{
+    if(cs == Vt::CaseSensitive)
+	return !vustrncmp(unicode(), s.unicode(), s.size());
+
+    return !vustrincmp(unicode(), s.unicode(), s.size());
+}
+
+bool VString::startsWith(const VLatin1String &s, Vt::CaseSensitivity cs) const
+{
+    int len = vstrlen(s.latin1());
+    const char *ts = toLatin1().constData();
+
+    if(cs == Vt::CaseSensitive)
+	return !vstrncmp(ts, s.latin1(), len);
+
+    return !vstrnicmp(ts, s.latin1(), len);
+}
+
+bool VString::startsWith(const VChar &c, Vt::CaseSensitivity cs) const
+{
+    if(cs == Vt::CaseSensitive)
+	return *d->data == c;
+
+    return d->data->toUpper() == c.toUpper();
+}
+
+VString VString::left(int n) const
+{
+    return VString(d->data, n);
+}
+
+VString VString::right(int n) const
+{
+    return VString(d->data+(d->_s-n), n);
+}
+
+VString VString::mid(int position, int n) const
+{
+    if(n == -1) n = d->_s - position;
+
+    return VString(d->data+position, n); 
+}
+
+VString &VString::setRawData(const VChar *unicode, int size)
+{
+    clear();
+    reallocData(0);
+    d->data = const_cast<VChar*>(unicode);
+    d->_s = d->_alloc = size;
+    return *this;
+}
+
+VString &VString::setUnicode(const VChar *unicode, int size)
+{
+    clear();
+    reallocData(size);
+    d->_s = size;
+
+    memcpy(d->data, unicode, sizeof(VChar)*size);
+    return *this;
+}
+
+VString &VString::setUtf16(const ushort *unicode, int size)
+{
+    clear();
+    reallocData(size);
+    d->_s = size;
+
+    for(int i=0; i<size; ++i)
+	d->data[i] = VChar(unicode[i]);
+    return *this;
+}
+
+VString VString::toLower() const
+{
+    VString ret;
+    ret.reserve(d->_s);
+
+    for(int i=0; i<d->_s; ++i)
+	ret.d->data[i] = d->data[i].toLower();
+
+    return ret;
+}
+
+VString VString::toUpper() const
+{
+    VString ret;
+    ret.reserve(d->_s);
+
+    for(int i=0; i<d->_s; ++i)
+	ret.d->data[i] = d->data[i].toUpper();
+
+    return ret;
+}
+
+VStringList VString::split(const VString &sep, SplitBehavior bahavior, Vt::CaseSensitivity cs) const
+{
+    VStringList list;
+
+    int pos = indexOf(sep, 0, cs);
+    int last = 0;
+
+    if(pos == -1)
+    {
+	list << *this;
+	return list;
+    }
+
+    while(pos != -1)
+    {
+	VString tmp(d->data+last, pos - last);
+	if(bahavior == KeepEmptyParts)
+	    list << tmp;
+	else if(!tmp.isEmpty())
+	    list << tmp;
+	last = pos + sep.size();
+	pos = indexOf(sep, last, cs);
+    }
+
+    if(last != d->_s)
+    {
+	VString t(d->data+last, d->_s - last);
+	if((bahavior == KeepEmptyParts) || !t.isEmpty())
+	    list << t;
+    }
+
+    return list;
+}
+
+
+std::string VString::toStdString() const
+{
+    return std::string(toLatin1().data(), size());
+}
+
+VStdWString VString::toStdWString() const
+{
+    VStdWString ret;
+    ret.resize(size());
+
+    toWCharArray(&(*ret.begin()));
+    return ret;
+}
+
+int VString::toWCharArray(wchar_t *array) const
+{
+    if(sizeof(wchar_t) == sizeof(VChar))
+    {
+	memcpy(array, utf16(), size()*sizeof(wchar_t));
+    }
+    return size();
 }
 

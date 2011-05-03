@@ -2,6 +2,7 @@
 #include <cctype>
 #include <cstdlib>
 #include "vbytearray.h"
+#include "vlist.h"
 
 int vstrcmp(const char *str1, const char *str2)
 {
@@ -192,7 +193,6 @@ VByteArray::VByteArray(const char *str)
     reallocData(s);
     d->size = s;
     memcpy(d->str, str, d->size);
-    d->str[d->size] = '\0';
 }
 
 /*!
@@ -201,10 +201,9 @@ VByteArray::VByteArray(const char *str)
 VByteArray::VByteArray(const char *data, int size)
 {
     d = 0;
-    reallocData(size + 1);
+    reallocData(size);
     memcpy(d->str, data, size);
-    d->size = size+1;
-    d->str[d->size] = '\0';
+    d->size = size;
 }
 
 /*!
@@ -213,16 +212,16 @@ VByteArray::VByteArray(const char *data, int size)
 VByteArray::VByteArray(const VByteArray &other)
 {
     d = 0;
-    reallocData(other.d->size+1);
-    d->size = other.d->size + 1;
+    reallocData(other.d->size);
+    d->size = other.d->size;
     memcpy(d->str, other.d->str, other.d->size);
-    d->str[d->size] = '\0';
 }
 
 VByteArray::VByteArray(int size)
 {
     d = 0;
     reallocData(size);
+    d->size = size;
 }
 
 /*!
@@ -776,6 +775,48 @@ VByteArray VByteArray::toBase64() const
     return tmp;
 }
 
+VByteArray VByteArray::fromBase64(const VByteArray &base64)
+{
+    uint buf = 0;
+    int nbits = 0;
+    VByteArray tmp;
+    tmp.resize(base64.size());
+    
+    int offset = 0;
+    for (int i = 0; i < base64.size(); ++i) 
+    {
+	int ch = base64.at(i);
+	int d;
+	
+	if (ch >= 'A' && ch <= 'Z')
+	    d = ch - 'A';
+	else if (ch >= 'a' && ch <= 'z')
+	    d = ch - 'a' + 26;
+	else if (ch >= '0' && ch <= '9')
+	    d = ch - '0' + 52;
+	else if (ch == '+')
+	    d = 62;
+	else if (ch == '/')
+	    d = 63;
+	else
+	    d = -1;
+
+	if (d != -1) 
+	{
+	    buf = (buf << 6) | d;
+	    nbits += 6;
+	    if (nbits >= 8) 
+	    {
+		nbits -= 8;
+		tmp[offset++] = buf >> nbits;
+		buf &= (1 << nbits) - 1;
+	    }
+	}
+    }
+    
+    return tmp;
+}
+
 /*!
  * \fn bool VByteArray::startsWith(const VByteArray &ba) const
  * Возвращает \c true, если массив начинается с \a ba. 
@@ -1288,5 +1329,250 @@ VByteArray::operator const char *() const
 VByteArray::operator const void *() const
 {
     return d->str;
+}
+
+VByteArray VByteArray::left(int len) const
+{
+    return VByteArray(d->str, len);
+}
+
+VByteArray VByteArray::right(int len) const
+{
+    return VByteArray(d->str+(d->size-len), len);
+}
+
+VByteArray VByteArray::mid(int pos, int len) const
+{
+    if(len == -1) len = d->size - pos;
+    return VByteArray(d->str+pos, len);
+}
+
+bool vIsLower(char ch)
+{
+    return ch >= 'a' && ch <= 'z';
+}
+
+bool vIsUpper(char ch)
+{
+    return ch >= 'A' && ch <= 'Z';
+}
+
+char vToLower(char ch)
+{
+    if(vIsUpper(ch))
+	ch -= 'A';
+    return ch;
+}
+
+char vToUpper(char ch)
+{
+    if(vIsLower(ch))
+	ch += 'A';
+    return ch;
+}
+
+VByteArray VByteArray::toLower() const
+{
+    VByteArray ret;
+    ret.reserve(d->size);
+
+    for(int i=0; i<d->size; ++i)
+	ret[i] = vToLower(d->str[i]);
+    return ret;
+}
+
+VByteArray VByteArray::toUpper() const
+{
+    VByteArray ret;
+    ret.reserve(d->size);
+
+    for(int i=0; i<d->size; ++i)
+	ret[i] = vToUpper(d->str[i]);
+    return ret;
+}
+
+VByteArray &VByteArray::setRawData(const char *data, uint size)
+{
+    clear();
+    reallocData(0);
+
+    d->str = const_cast<char*>(data);
+    d->size = d->alloc = size;
+    return *this;
+}
+
+VByteArray VByteArray::leftJustified(int width, char fill, bool truncate) const
+{
+    int p = width - d->size;
+    if(p < 0)
+    {
+	if(truncate)
+	    return left(width);
+	else
+	    return *this;
+    }
+
+    VByteArray ret;
+    ret.resize(width);
+
+    memcpy(ret.d->str, d->str, d->size);
+    memset(ret.d->str+d->size, fill, p);
+    return ret;
+}
+
+VByteArray VByteArray::rightJustified(int width, char fill, bool truncate) const
+{
+    int p = width - d->size;
+    if(p < 0)
+    {
+	if(truncate)
+	    return right(width);
+	else
+	    return *this;
+    }
+
+    VByteArray ret;
+    ret.resize(width);
+
+    memcpy(ret.d->str+p, d->str, d->size);
+    memset(ret.d->str, fill, p);
+    return ret;
+}
+
+bool vIsSpace(char ch)
+{
+    return ch == ' '  ||
+	   ch == '\t' ||
+	   ch == '\n' ||
+	   ch == '\v' ||
+	   ch == '\f' ||
+	   ch == '\r';
+}
+
+VByteArray VByteArray::simplified() const
+{
+    if(d->size == 0)
+	return *this;
+
+    VByteArray ret;
+
+    ret.reserve(size());
+    char *out = ret.data();
+    char *in = d->str;
+    char *inend = d->str + d->size;
+    int pos = 0;
+
+    forever
+    {
+	while(in != inend && vIsSpace(*in))
+	    ++in;
+	while(in != inend && !vIsSpace(*in))
+	    out[pos++] = *in++;
+	if(in != inend)
+	    out[pos++] = ' ';
+	else
+	    break;
+    }
+
+    if(pos > 0 && out[pos-1] == ' ')
+	--pos;
+    ret.resize(pos);
+
+    return ret;
+}
+
+VList<VByteArray> VByteArray::split(char sep) const
+{
+    VList<VByteArray> ret;
+    int pos = indexOf(sep);
+    int last = 0;
+
+    while(pos != -1)
+    {
+	ret << VByteArray(d->str+last, pos-last);
+	last = pos + 1;
+	pos = indexOf(sep, last);
+    }
+
+    if(last != d->size)
+	ret << VByteArray(d->str+last, d->size - last);
+
+    return ret;
+}
+
+void VByteArray::squeeze()
+{
+    if(d->size == d->alloc)
+	return;
+
+    Data *x = (Data*)malloc(sizeof(Data)+d->size);
+    x->alloc = x->size = d->size;
+    x->str = x->array;
+    x->str[d->size] = '\0';
+    memcpy(x->str, d->str, d->size);
+    free(d);
+    d = x;
+}
+
+VByteArray VByteArray::toHex() const
+{
+    VByteArray ret;
+    ret.resize(d->size * 2);
+
+    const uchar *in = (const uchar *)d->str;
+    char *out = ret.d->str;
+
+    for(int i=0; i<d->size; ++i)
+    {
+	int c = (in[i] >> 4) & 0xF;
+	if(c <= 9)
+	    *out++ = c + '0';
+	else
+	    *out++ = c - 10 + 'a';
+	c = in[i] & 0xF;
+	if(c <= 9)
+	    *out++ = c + '0';
+	else
+	    *out++ = c - 10 + 'a';
+    }
+
+    return ret;
+}
+
+VByteArray VByteArray::fromHex(const VByteArray &hexEncoded)
+{
+    VByteArray ret;
+    ret.resize(hexEncoded.d->size / 2 );
+
+    const uchar *hex = (const uchar *)hexEncoded.d->str;
+    char *out = ret.d->str;
+
+    for(int i=0; i<hexEncoded.d->size; ++i)
+    {
+	char c = 0;
+	int tmp = hex[i];
+
+	if(tmp >= 'a' && tmp <= 'z')
+	    tmp = (tmp - 'a' + 10) << 4;
+	else if(tmp >= 'A' && tmp <= 'Z')
+	    tmp = (tmp - 'A' + 10) << 4;
+	else if(tmp >= '0' && tmp <= '9')
+	    tmp = (tmp - '0') << 4;
+	c |= tmp;
+
+	tmp = hex[++i];
+	if(tmp >= 'a' && tmp <= 'z')
+	    tmp = (tmp - 'a' + 10);
+	else if(tmp >= 'A' && tmp <= 'Z')
+	    tmp = (tmp - 'A' + 10);
+	else if(tmp >= '0' && tmp <= '9')
+	    tmp = tmp - '0';
+
+	c |= tmp;
+
+	*out++ = c;
+    }
+    
+    return ret;
 }
 

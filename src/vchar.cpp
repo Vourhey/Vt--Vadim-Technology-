@@ -6,6 +6,26 @@
 
 #define FLAG(x) (1 << (x))
 
+/*!
+ * \class VLatin1Char
+ * \brief Реализует 8-битный ASCII/Latin-1 символ.
+ *
+ * Класс полезен только для конструктора VChar(ch) взамен обычному символу \c char.
+ * \see VChar, VLatin1String и VString
+ */
+/*!
+ * \fn VLatin1Char::VLatin1Char(char c)
+ * Создает символ Latin-1 для \a c.
+ */
+/*!
+ * \fn char VLatin1Char::toLatin1() const
+ * Возвращает 8-битный эквивалент символа.
+ */
+/*!
+ * \fn ushort VLatin1Char::unicode() const
+ * Возвращает Latin-1 символ в 16-битном представлении Юникод.
+ */
+
 VChar::VChar(char ch)
 {
     ucs = uchar(ch);

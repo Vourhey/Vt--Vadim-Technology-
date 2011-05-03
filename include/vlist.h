@@ -147,12 +147,12 @@ public:
     typedef const_iterator ConstIterator;
     typedef iterator       Iterator;
 
-    iterator begin() { return d->data; }
+    iterator begin() { return iterator(d->data); }
     const_iterator begin() const { return d->data; }
     const_iterator constBegin() const { return d->data; }
-    const_iterator constEnd() const { return d->data; }
-    iterator end() { return d->data+d->size; }
-    const_iterator end() const { return d->data+d->size; }
+    const_iterator constEnd() const { return d->data+d->size; }
+    iterator end() { return iterator(d->data+d->size); }
+    const_iterator end() const { return const_iterator(d->data+d->size); }
 
     std::list<T> toStdList() const
     {
@@ -241,13 +241,18 @@ public:
     VList<T> &operator=(const VList<T> &other)
     {
 	free(d);
-	d = (VListData*)malloc(sizeof(VListData)+other.size()*sizeof(T));
-	d->data = d->array;
+	d = 0;
+	reallocData(other.d->size);
+	d->size = other.d->size;
 	
 	for(int i=0; i<other.size(); ++i)
-	    d->data[i] = other.d->data[i];
+	    d->data[i] = new Node(*other.d->data[i].v);
+	
 	return *this;
     }
+
+protected:
+    void resize(int alloc) { reserve(alloc); d->size = alloc; }
 
 private:
     struct Node
@@ -271,14 +276,14 @@ void VList<T>::reallocData(int _s)
 {
     if(!d)
     {
-	d = (VListData*)malloc(sizeof(VListData) + _s*sizeof(T*));
+	d = (VListData*)malloc(sizeof(VListData) + _s*sizeof(Node));
 	d->size = 0;
 	d->alloc = _s;
 	d->data = d->array;
     }
     else if(_s > d->alloc)
     {
-	VListData *x = (VListData*)malloc(sizeof(VListData)+ _s*sizeof(T*));
+	VListData *x = (VListData*)malloc(sizeof(VListData)+ _s*sizeof(Node));
 	x->alloc = _s;
 	x->size = d->size;
 	x->data = x->array;
@@ -291,26 +296,23 @@ void VList<T>::reallocData(int _s)
 template<class T>
 VList<T>::VList()
 {
-    d = (VListData*)malloc(sizeof(VListData));
-    d->size = d->alloc = 0;
-    d->data = d->array;
+    d = 0;
+    reallocData(0);
 }
 
 template<class T>
 VList<T>::VList(const VList<T> &other)
 {
-    d = (VListData*)malloc(sizeof(VListData)+other.d->size*sizeof(T*));
-    d->data = d->array;
-    d->alloc = other.d->size;
-    d->size = other.d->size;
+    d = 0;
+    reallocData(other.size());
+    d->size = other.size();
     memcpy(d->data, other.d->data, sizeof(Node)*d->size);
 }
 
 template<class T>
 void VList<T>::append(const T &value)
 {
-    reallocData(d->size+1);
-    d->size++;
+    reallocData(++d->size);
     Node *n = new Node(value);
     d->data[d->size-1] = *n;
 }
@@ -320,7 +322,7 @@ void VList<T>::append(const VList<T> &value)
 {
     reserve(value.d->size + d->size);
     for(int i = 0; i<value.d->size; i++)
-	(d->data+d->size+i).v = new T(*value.d->data[i].v);
+	d->data[d->size+i].v = new T(*value.d->data[i].v);
     d->size += value.d->size;
 }
 
