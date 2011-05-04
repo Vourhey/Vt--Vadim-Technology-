@@ -1,6 +1,7 @@
 #include <cstring>
 #include <cctype>
 #include <cstdlib>
+#include <climits>
 #include "vbytearray.h"
 #include "vlist.h"
 
@@ -1449,6 +1450,17 @@ bool vIsSpace(char ch)
 	   ch == '\r';
 }
 
+bool vIsDigit(char ch)
+{
+    return ch >= '0' && ch <='9';
+}
+
+bool vIsAlpha(char ch)
+{
+    return (ch >= 'a' && ch <= 'z') ||
+	   (ch >= 'A' && ch <= 'Z');
+}
+
 VByteArray VByteArray::simplified() const
 {
     if(d->size == 0)
@@ -1574,5 +1586,277 @@ VByteArray VByteArray::fromHex(const VByteArray &hexEncoded)
     }
     
     return ret;
+}
+
+vlonglong vstrtoll(const char *nptr, const char **endptr, register int base, bool *ok)
+{
+    register const char *s;
+    vlonglong acc = 0;
+    uchar c = 0;
+    bool neg;
+
+    // пропускаем все пробелы
+    s = nptr;
+    do {
+	c = *s++;
+    } while(vIsSpace(c));
+
+    if(c == '-')
+    {
+	neg = true;
+	c = *s++;
+    }
+    else
+    {
+	neg = false;
+	if(c == '+')
+	    c = *s++;
+    }
+
+    int any;
+    for(any = 0;; c = *s++) 
+    {
+	if(c == '\0')
+	    break;
+	if(!isascii(c))
+	{
+	    any = -1;
+	    break;
+	}
+	if(vIsDigit(c))
+	    c -= '0';
+	else if(vIsAlpha(c))
+	    c -= isupper(c) ? 'A' - 10 : 'a' - 10;
+	else
+	{
+	    any = -1;
+	    break;
+	}
+	if(c >= base)
+	{
+	    any = -1;
+	    break;
+	}
+
+	acc *= base;
+	acc += c;
+    }
+
+    if(any == -1)
+    {
+	acc = 0;
+	if(ok != 0)
+	    *ok = false;
+    }
+    else if(neg) acc = -acc;
+    if(endptr != 0)
+	*endptr = (any == 0 ? s - 1 : nptr);
+    if(ok != 0)
+	*ok = true;
+
+    return acc;
+}
+
+vulonglong vstrtoull(const char *nptr, const char **endptr, register int base, bool *ok)
+{
+    register const char *s;
+    vulonglong acc = 0;
+    uchar c = 0;
+    
+    // пропускаем пробелы
+    s = nptr;
+    do {
+	c = *s++;
+    } while(vIsSpace(c));
+
+    int any;
+    for(any = 0;; c = *s++)
+    {
+	if(c == '\0')
+	    break;
+	if(!isascii(c))
+	{
+	    any = -1;
+	    break;
+	}
+	if(vIsDigit(c))
+	    c -= '0';
+	else if(vIsAlpha(c))
+	    c -= isupper(c) ? 'A' - 10 : 'a' - 10;
+	else
+	{
+	    any = -1;
+	    break;
+	}
+	if(c >= base)
+	{
+	    any = -1;
+	    break;
+	}
+
+	acc *= base;
+	acc += c;
+    }
+
+    if(any == -1)
+    {
+	acc = 0;
+	if(ok != 0)
+	    *ok = false;
+    }
+    if(endptr != 0)
+	*endptr = (any == 0 ? s-1 : nptr);
+    if(ok != 0)
+	*ok = true;
+   
+    return acc; 
+}	
+
+vlonglong VByteArray::toLongLong(bool *ok, int base) const
+{
+    const char *end;
+
+    vlonglong l = vstrtoll(d->str, &end, base, ok);
+
+    if(*end != '\0')
+	if(ok != 0)
+	    *ok = false;
+
+    return l;
+}
+
+int VByteArray::toInt(bool *ok, int base) const
+{
+    vlonglong l = toLongLong(ok, base);
+    if(l > INT_MAX || l < INT_MIN)
+    {
+	if(ok != 0)
+	    *ok = false;
+	l = 0;
+    }
+
+    return int(l);
+}
+
+long VByteArray::toLong(bool *ok, int base) const
+{
+    vlonglong l = toLongLong(ok, base);
+    if(l > LONG_MAX || l < LONG_MIN)
+    {
+	if(ok != 0)
+	    *ok = false;
+	l = 0;
+    }
+    return long(l);
+}
+
+short VByteArray::toShort(bool *ok, int base) const
+{
+    vlonglong l = toLongLong(ok, base);
+    if(l > SHRT_MAX || l < SHRT_MIN)
+    {
+	if(ok != 0)
+	    *ok = false;
+	l = 0;
+    } 
+
+    return short(l);
+}
+
+vulonglong VByteArray::toULongLong(bool *ok, int base) const
+{
+    const char *endptr;
+
+    vulonglong ul = vstrtoull(d->str, &endptr, base, ok);
+    if(endptr != '\0')
+	if(ok != 0)
+	    *ok = false;
+    return ul;
+}
+
+uint VByteArray::toUInt(bool *ok, int base) const
+{
+    vulonglong ul = toULongLong(ok, base);
+    if(ul > UINT_MAX)
+    {
+	if(ok != 0)
+	    *ok = false;
+	ul = 0;
+    }
+
+    return uint(ul);
+}
+
+ulong VByteArray::toULong(bool *ok, int base) const
+{
+    vulonglong ul = toULongLong(ok, base);
+    if(ul > ULONG_MAX)
+    {
+	if(ok != 0)
+	    *ok = false;
+	ul = 0;
+    }
+
+    return ulong(ul);
+}
+
+ushort VByteArray::toUShort(bool *ok, int base) const
+{
+    vulonglong ul = toULongLong(ok, base);
+    if(ul > USHRT_MAX)
+    {
+	if(ok != 0)
+	    *ok = false;
+	ul = 0;
+    }
+
+    return ushort(ul);
+}
+
+VByteArray VByteArray::trimmed() const
+{
+    VByteArray ret;
+    ret.reserve(d->size);
+
+    char c = 0;
+    char *sb = d->str;
+    char *se = d->str+d->size;
+
+    do {
+	c = *sb++;
+    } while(vIsSpace(c));
+
+    do {
+	c = *se--;
+    } while(vIsSpace(c));
+
+    --sb;
+    ++se;
+
+    if(sb > se) return ret;
+
+    ret.append(sb, int(se - sb));
+    ret.squeeze();
+    
+    return ret;
+}
+
+VByteArray &VByteArray::operator=(const VByteArray &other)
+{
+    clear();
+    reallocData(other.d->size);
+    memcpy(d->str, other.d->str, other.d->size);
+    d->size = other.d->size;
+    return *this;
+}
+
+VByteArray &VByteArray::operator=(const char *str)
+{
+    clear();
+    int l = vstrlen(str);
+    reallocData(l);
+    memcpy(d->str, str, l);
+    d->size = l;
+    return *this;
 }
 

@@ -166,6 +166,18 @@ public:
     VByteArray &setNum(float n, int prec = 6)
 	{ return setNum(double(n), prec); }
 
+    vlonglong toLongLong(bool *ok = 0, int base = 10) const;
+    long toLong(bool *ok = 0, int base = 10) const;
+    int toInt(bool *ok = 0, int base = 10) const;
+    short toShort(bool *ok = 0, int base = 10) const;
+
+    vulonglong toULongLong(bool *ok = 0, int base = 10) const;
+    uint toUInt(bool *ok = 0, int base = 10) const;
+    ulong toULong(bool *ok = 0, int base = 10) const;
+    ushort toUShort(bool *ok = 0, int base = 10) const;
+
+    VByteArray trimmed() const;
+
     // STL
     // NR: дописать inline
     void push_back(const VByteArray &other)  { append(other); }
@@ -177,6 +189,8 @@ public:
     // END STL
     
     // operators
+    VByteArray &operator=(const VByteArray &other);
+    VByteArray &operator=(const char *str);
     bool operator!=(const VByteArray &str) const
 	{ return vstrcmp(str.d->str, d->str); }
     bool operator==(const VByteArray &str) const
