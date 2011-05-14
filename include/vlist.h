@@ -8,6 +8,8 @@
 
 template<class T> class VVector;
 
+template<class T> class VVector;
+
 template<class T>
 class VList
 {
