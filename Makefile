@@ -15,7 +15,8 @@ OBJECTS = .obj/vpoint.o     \
 	  .obj/vbuffer.o    \
 	  .obj/vchar.o      \
 	  .obj/vstring.o    \
-	  .obj/vstringlist.o
+	  .obj/vstringlist.o \
+	  .obj/valgorithms.o
 SOURCES = src/vbytearray.cpp   \
 	  src/vdatetime.cpp    \
 	  src/vglobal.cpp      \
@@ -31,7 +32,8 @@ SOURCES = src/vbytearray.cpp   \
 	  src/vbuffer.cpp      \
 	  src/vchar.cpp        \
 	  src/vstring.cpp      \
-	  src/vstringlist.cpp
+	  src/vstringlist.cpp  \
+	  src/valgorithms.cpp
 HEADERS = include/valgorithms.h  \
 	  include/vdatetime.h    \
 	  include/viterator.h    \
@@ -89,6 +91,9 @@ $(OUT_DIR)/vstring.o: src/vstring.cpp include/vstring.h
 
 $(OUT_DIR)/vstringlist.o: src/vstringlist.cpp include/vstringlist.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) src/vstringlist.cpp -o $(OUT_DIR)/vstringlist.o
+
+$(OUT_DIR)/valgorithms.o: src/valgorithms.cpp include/valgorithms.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) src/valgorithms.cpp -o $(OUT_DIR)/valgorithms.o
 
 test: $(TARGET) main.cpp
 	$(CXX) $(CXXFLAGS) main.cpp $(TARGET) $(INCPATH) -o test

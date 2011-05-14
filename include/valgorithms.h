@@ -176,4 +176,6 @@ void vSwap(T &t1, T &t2)
     t2 = tmp;
 }
 
+extern uint vNodEvklid(uint first, uint second);
+
 #endif

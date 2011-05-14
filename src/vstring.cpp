@@ -2,77 +2,139 @@
 #include "vbytearray.h"
 #include "vstringlist.h"
 
+/*!
+ * \class VLatin1String
+ * \brief Класс для удобного представления строки в US-ASCII/Latin-1 кодировки.
+ *
+ * Многие функции VString используют этот класс для представления <tt>const char *</tt>.
+ * Класс включает конструктор копий, функции доступа и операторы сравнения строк.
+ * Этот класс оптимизирует создание VString для <tt>const char *</tt> объектов. Например:
+ * \code
+ * if(str == "auto" || str == "extern" || 
+ *    str == "static" || str == "register")
+ * {
+ *     ... 
+ * }
+ * \endcode
+ * более быстрое чем
+ * \code
+ * if (str == VString("auto") || str == VString("extern") || 
+ *     str == VString("static") || str == VString("register")) 
+ * {
+ *      ...
+ * }
+ * \endcode
+ * так как не создаются временные объекты VString.
+ * \see VString и VLatin1Char
+ */
+
+/*!
+ * Создает объект VLatin1String для хранения \a str. Помните, что
+ * данные из \a str не копируются. При инициализации вы должны гарантировать,
+ * что строка не будет удалена или измененна пока VLatin1String существует.
+ * \see latin1()
+ */
 VLatin1String::VLatin1String(const char *str)
 {
     data = str;
 }
 
+/*!
+ * Возвращает строку Latin-1, хранящуюся в этом объекте.
+ */
 const char *VLatin1String::latin1() const
 {
     return data;
 }
 
+/*!
+ * Конструктор копий для \a other.
+ */
 VLatin1String &VLatin1String::operator=(const VLatin1String &other)
 {
     data = other.data;
     return *this;
 }
 
+/*!
+ * Возвращает \c true, если строка не равна \a other. Иначе \c false.
+ */
 bool VLatin1String::operator!=(const VString &other) const
 {
     return VString::compare(*this, other);
 }
 
+/*! \overload  */
 bool VLatin1String::operator!=(const char *other) const
 {
     return vstrcmp(data, other);
 }
 
+/*!
+ * Возвращает \c true, если строка меньше \a other. Иначе \c false.
+ */
 bool VLatin1String::operator<(const VString &other) const
 {
     return VString::compare(*this, other) < 0;
 }
 
+/*! \overload */
 bool VLatin1String::operator<(const char *other) const
 {
      return vstrcmp(data, other) < 0;
 }
 
+/*!
+ * Возвращает \c true, если строка меньше или равна \a other. Иначе \c false.
+ */
 bool VLatin1String::operator<=(const VString &other) const
 {
     return VString::compare(*this, other) <= 0;
 }
 
+/*! \overload */
 bool VLatin1String::operator<=(const char *other) const
 {
     return vstrcmp(data, other) <= 0;
 }
 
+/*!
+ * Возвращает \c true, если строка равна \a other. Иначе \c false.
+ */
 bool VLatin1String::operator==(const VString &other) const
 {
     return !VString::compare(*this, other);
 }
 
+/*! \overload */
 bool VLatin1String::operator==(const char *other) const
 {
     return !vstrcmp(data, other);
 }
 
+/*!
+ * Возвращает \c true, если строка больше \a other. Иначе \c false.
+ */
 bool VLatin1String::operator>(const VString &other) const
 {
     return VString::compare(*this, other) > 0;
 }
 
+/*! \overload */
 bool VLatin1String::operator>(const char *other) const
 {
     return vstrcmp(data, other) > 0;
 }
 
+/*!
+ * Возвращает \c true, если строка больше или равна \a other. Иначе \c false.
+ */
 bool VLatin1String::operator>=(const VString &other) const
 {
     return VString::compare(*this, other) >= 0;
 }
 
+/*! \overload */
 bool VLatin1String::operator>=(const char *other) const
 {
     return vstrcmp(data, other) >= 0;
