@@ -80,6 +80,10 @@
  * \typedef VLinkedList::value_type
  * Синоним для T. \stl
  */
+/*!
+ * \typedef VLinkedList::difference_type
+ * Синоним для vptrdiff.
+ */
 
 /*!
  * \fn VLinkedList::VLinkedList()
@@ -682,3 +686,29 @@
  * \overload
  * \see operator!=()
  */
+/*!
+ * \fn std::list<T> VLinkedList::toStdList() const
+ * Возвращает объект std::list, содержащий данные из этого VLinkedList:
+ * \code
+ * VLinkedList<double> list;
+ * list << 1.2 << 0.5 << 3.14;
+ *
+ * std::list<double> stdList = list.toStdList();
+ * \endcode
+ * \see fromStdList()
+ */
+/*!
+ * \fn VLinkedList<T> VLinkedList::fromStdList(const std::list<T> &list)
+ * Возвращает объект VLinkedList, содержащий данные из \a list в 
+ * таком же порядке. Пример:
+ * \code
+ * std::list<double> stdlist;
+ * list.push_back(1.2);
+ * list.push_back(0.5);
+ * list.push_back(3.14);
+ *
+ * VLinkedList<double> list = VLinkedList<double>::fromStdList(stdlist);
+ * \endcode
+ * \see toStdList()
+ */
+

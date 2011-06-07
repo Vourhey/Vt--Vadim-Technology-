@@ -254,6 +254,113 @@
  */
 
 /*!
+ * \def VT_VERSION
+ * Макрос, расширяющийся в челочисленное значение вида 0xMMNNPP, равное номеру версии. 
+ * Например, для первой версии (v0.1.0) макрсо будет представлять 0x000100.
+ * \see vVersion()
+ */
+/*!
+ * \def VT_VERSION_STR
+ * Представляет строковую константу, равную номеру версии (например, "0.1.0")
+ * \see vVersion() и VT_VERSION
+ */
+/*!
+ * \fn vVersion()
+ * Возвращает версию библиотеки в виде строковой константы.
+ * \see VT_VERSION_STR
+ */
+/*!
+ * \def V_INT64_C(literal)
+ * Возвращает целое 64-х битное со знаком. Напримре:
+ * \code
+ *  vint64 value = V_INT64_C(932838457459459);
+ * \endcode
+ * \see vint64 и V_UINT64_C()
+ */
+/*!
+ * \def V_UINT64_C(literal)
+ * Возвращает целое 64-х битное беззнаковое число. Например:
+ * \code
+ *  vuint64 value = V_UINT64_C(932838457459459);
+ * \endcode
+ * \see vuint64 и V_INT64_C()
+ */
+/*!
+ * \fn T vAbs(const T &value)
+ * Сравнивает \a value с нулем и возвращает абсолютное значение. Например:
+ * \code
+ * int absoluteValue;
+ * int myValue = -4;
+ *
+ * absoluteValue = vAbs(myValue);
+ * // absoluteValue == 4
+ * \endcode
+ */
+/*!
+ * \fn const T &vMax(const T &value1, const T &value2)
+ * Возвращает максимальное из двух значений \a value1 и \a value2. Например:
+ * \code
+ * int myValue = 6;
+ * int yourValue = 4;
+ * 
+ * int maxValue = vMax(myValue, yourValue);
+ * // maxValue == myValue
+ * \endcode
+ * \see vMin() и vBound()
+ */
+/*!
+ * \fn const T &vMin(const T &value1, const T &value2)
+ * Возвращает меньшее из двух значений \a value1 и \a value2. Например:
+ * \code
+ * int myValue = 6;
+ * int yourValue = 4;
+ *
+ * int minValue = vMin(myValue, yourValue);
+ * // minValue == yourValue
+ * \endcode
+ * \see vMax() и vBound()
+ */
+/*!
+ * \fn const T &vBound(const T &min, const T &value, const T &max)
+ * Возвращает среднее из трех значений. Это равносильно vMax(\a min, vMin(\a value, \a max)). Пример:
+ * \code
+ * int myValue = 10;
+ * int minValue = 2;
+ * int maxValue = 6;
+ *
+ * int boundedValue = vBound(minValue, myValue, maxValue);
+ * // boundedValue == 6
+ * \endcode
+ * \see vMin() и vMax()
+ */
+/*!
+ * \fn int vRound(vreal value)
+ * Округляет \a value до ближайшего целого. Пример:
+ * \code
+ * vreal valueA = 2.3;
+ * vreal valueB = 2.7;
+ *
+ * int roundedA = vRound(valueA);
+ * // roundedA == 2
+ * int roundedB = vRound(valueB);
+ * // roundedB == 3
+ * \endcode
+ */
+/*!
+ * \fn vint64 vRound64(vreal value)
+ * Округляет \a value до ближайщего 64-х битного целого. Пример:
+ * \code
+ * vreal valueA = 42949672960.3;
+ * vreal valueB = 42949672960.7;
+ *
+ * vint64 roundedValueA = vRound64(valueA);
+ * // roundedValueA == 42949672960
+ * vint64 roundedValueB = vRound64(valueB);
+ * // roundedValueB == 42949672961
+ * \endcode
+ */
+
+/*!
  * Печатает критическое сообщение об ошибке на стандартный
  * поток ошибок (stderr). Аргументы функции такие же как
  * у стандратной C-функции printf().
@@ -341,6 +448,156 @@ void vDebug(const char *msg, ... )
     fprintf(stderr, "\n");
     va_end(format);
 }
+
+/*!
+ * \def V_ASSERT(test)
+ * Печатает предупреждающее сообщение, содержащее \a test, 
+ * имя файла и номер строки, если \a test не прошел (равен \c false).
+ * \code
+ * // File: dev.cpp
+ *
+ * #include <VtGlobal>
+ *
+ * int divide(int a, int b)
+ * {
+ *     V_ASSERT(b != 0);
+ *     return a / b;
+ * }
+ * \endcode
+ * Если b равно нулю, то V_ASSERT выведет слудующее сообщение, используя vFatal():
+ * \code
+ * ASSERT: "b != 0" в файле div.cpp, в строке 7
+ * \endcode
+ * \see V_ASSERT_X(), vFatal()
+ */
+/*!
+ * \def V_ASSERT_X(test, where, what)
+ * Печатает сообщение \a what вместе с расположением \a where, имя файла
+ * и номер строки, если \a test равен \c false.
+ * \code
+ * // File: div.cpp
+ *
+ * #include <VtGlobal>
+ *
+ * int divide(int a, int b)
+ * {
+ *     V_ASSERT_X(b != 0, "divide", "деление на ноль");
+ *     return a / b;
+ * }
+ * \endcode
+ * Если b равно нулю, то V_ASSERT_X выведет следующее сообщение с помощью vFatal():
+ * \code
+ * ASSERT в divide: "деление на ноль", в файле div.cpp, в строке 7
+ * \endcode
+ * \see V_ASSERT() и vFatal()
+ */
+/*!
+ * \def V_CHECK_PTR(p)
+ * Если \a p равен 0, печатает предупреждающее сообщение, содержащее
+ * имя исходного файла и номер строки. Пример:
+ * \code
+ * int *a;
+ *
+ * V_CHECK_PTR(a = new int[70]); // ошбика!
+ * 
+ * a = new (nothrow) int[70];    // правильно
+ * V_CHECK_PTR(a);
+ * \endcode
+ * \see vWarning()
+ */
+/*!
+ * \fn T *v_check_ptr(T *p)
+ * Встраиваемая версия V_CHECK_PTR. Возвращает \a p.
+ */
+/*!
+ * \def V_UNUSED(name)
+ * Указывает компилятору, что параметр \a name не используется в теле функции.
+ * Это может быть использовано для подавлений предупреждений компилятора.
+ */
+/*!
+ * \def V_FOREVER
+ * Так же как и #forever.
+ */
+/*!
+ * \def forever
+ * Макрос расширяется в бесконечный цикл. Пример:
+ * \code
+ * forever 
+ * {
+ *    ...
+ * }
+ * \endcode
+ * Это равносильно for(;;).
+ * \see V_FOREVER
+ */
+/*!
+ * \def V_CC_BOR
+ * Определено если приложение компилируется в Borland C++. 
+ */
+/*!
+ * \def V_CC_COMEAU
+ * Определено если приложение компилируется в Comeau C++. 
+ */
+/*!
+ * \def V_CC_EDG
+ * Определено если приложение компилируется в Edison Design Group C++. 
+ */
+/*!
+ * \def V_CC_GHS
+ * Определено если приложение компилируется в Green Hills Optimizing C++ Compilers.
+ */
+/*!
+ * \def V_CC_GNU
+ * Определено если приложение компилируется в GNU C++. 
+ */
+/*!
+ * \def V_CC_HIGHC
+ * Определено если приложение компилируется в MetaWare High C++. 
+ */
+/*!
+ * \def V_CC_HPACC
+ * Определено если приложение компилируется в HP aC++. 
+ */
+/*!
+ * \def V_CC_INTEL
+ * Определено если приложение компилируется в Intel C++. 
+ */
+/*!
+ * \def V_CC_KAI
+ * Определено если приложение компилируется в KAI C++. 
+ */
+/*!
+ * \def V_CC_MIPS
+ * Определено если приложение компилируется в MIPSpro C++. 
+ */
+/*!
+ * \def V_CC_MSVC
+ * Определено если приложение компилируется в Microsoft Visual C++. 
+ */
+/*!
+ * \def V_CC_MWERKS
+ * Определено если приложение компилируется в Metrowerks CodeWarrior. 
+ */
+/*!
+ * \def V_CC_PGI
+ * Определено если приложение компилируется в Portland Group C++.
+ */
+/*!
+ * \def V_CC_SUN
+ * Определено если приложение компилируется в Sun Studio C++. 
+ */
+/*!
+ * \def V_CC_SYM
+ * Определено если приложение компилируется в Digital Mars C++. 
+ */
+/*!
+ * \def V_CC_USLC
+ * Определено если приложение компилируется в SCO OUDK. 
+ */
+/*!
+ * \def V_CC_WAT
+ * Определено если приложение компилируется в Watcom C++. 
+ */
 
 /*! \} */
 

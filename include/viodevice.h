@@ -44,6 +44,8 @@ public:
     virtual vint64 pos() const;
     virtual vint64 size() const;
 
+    virtual bool seek(vint64 pos);
+
     bool getChar(char *c);
     bool putChar(char c);
     void ungetChar(char c);
@@ -51,6 +53,8 @@ public:
     vint64 read(char *data, vint64 maxSize);
     VByteArray read(vint64 maxSize);
     VByteArray readAll();
+    VByteArray readLine(vint64 maxSize = 0);
+    vint64 readLine(char *data, vint64 maxSize);
 
     vint64 write(const char *data, vint64 maxSize);
     inline vint64 write(const char *data) 

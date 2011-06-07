@@ -3,7 +3,6 @@
 
 #include "vchar.h"
 
-
 #define UNICODE_DATA_VERSION VChar::Unicode_5_0
 
 #define UNICODE_LAST_CODEPOINT 0x10ffff
@@ -171,6 +170,5 @@ namespace VUnicodeTables {
     { return script(ch.unicode()); }
 
 } // namespace VUnicodeTables
-
 
 #endif // VUNICODETABLES_P_H

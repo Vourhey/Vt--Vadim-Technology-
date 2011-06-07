@@ -127,6 +127,10 @@
  * \typedef VVector::value_type
  * Синоним для T. \stl
  */
+/*!
+ * \typedef VVector::difference_type
+ * Синоним для vptrdiff.
+ */
 
 /*!
  * \fn VVector::VVector()
@@ -578,3 +582,27 @@
  * \overload
  * \n Равносильно at(\a i).
  */
+/*!
+ * \fn VVector<T> &VVector::operator=(const VVector<T> &other)
+ * Назначает этому вектору вектор \a other и возвращает ссылку на этот объект.
+ */
+/*!
+ * \fn void VVector::squeeze()
+ * Освобождает все неиспользуемую память. 
+ * Эта функция вам понядобится только если вы хотите точно отслеживать
+ * занятую память.
+ * \see reserve() и capacity()
+ */
+/*!
+ * \fn VList<T> VVector::toList() const
+ * Возвращает VList, содержащий данные из этого вектора. Пример:
+ * \code
+ * VVector<double> vect;
+ * vect << 2.65 << 12.4 << 0.68;
+ *
+ * VList<double> list = vect.toList();
+ * // list: [2.65, 12.4, 0.68]
+ * \endcode
+ * \see fromList() и VList::fromVector()
+ */
+

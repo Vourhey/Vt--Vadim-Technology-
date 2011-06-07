@@ -24,8 +24,8 @@ bool VIODevice::atEnd() const
 
 bool VIODevice::canReadLine() const
 {
-    return d->buffer.canReadLine();
-}
+    return false;
+} 
 
 bool VIODevice::open(OpenMode mode)
 {
@@ -37,7 +37,6 @@ bool VIODevice::open(OpenMode mode)
 void VIODevice::close()
 {
     d->openMode = NotOpen;
-    d->buffer.clear();
     d->pos = 0;
     d->errorString.clear();
 }
@@ -46,6 +45,7 @@ bool VIODevice::getChar(char *c)
 {
     if(readData(c, 1) != 1)
 	 return false;
+    ++d->pos;
     return true;
 }
 
@@ -53,12 +53,13 @@ bool VIODevice::putChar(char c)
 {
     if(writeData(&c, 1) != 1)
 	return false;
+    --d->pos;
     return true;
 }
 
 void VIODevice::ungetChar(char c)
 {
-    d->buffer.ungetChar(c); 
+    writeData(&c, 1); 
 }
 
 bool VIODevice::isOpen() const
@@ -108,7 +109,6 @@ void VIODevice::setErrorString(const VByteArray &str)
 void VIODevice::setOpenMode(OpenMode openMode)
 {
     d->openMode = openMode;
-    d->pos = 0;
 }
 
 vint64 VIODevice::pos() const
@@ -154,5 +154,54 @@ VByteArray VIODevice::readAll()
     ret.reserve(size());
     readData(ret.data(), size());
     return ret;
+}
+
+VByteArray VIODevice::readLine(vint64 maxSize)
+{
+    VByteArray ret;
+    maxSize = maxSize == 0 ? size() : maxSize;
+
+    char ch;
+    for(int i=0; i<maxSize; ++i)
+    {
+	if(readData(&ch, 1) != -1)
+	{
+	    ret.append(ch);
+	    if(ch == '\n')
+		break;
+	}
+	else break;
+    }
+
+    return ret;
+}
+
+vint64 VIODevice::readLine(char *data, vint64 maxSize)
+{
+    int i;
+    char ch;
+    for(i=0; i<maxSize; ++i)
+    {
+	if(readData(&ch, 1) != -1)
+	{
+	    data[i] = ch;
+	    if(ch == '\n') break;
+	}
+	else return -1;
+    }
+
+    return i;
+}
+
+bool VIODevice::seek(vint64 pos)
+{
+    if(isOpen())
+    {
+	d->pos = pos;
+	return true;
+    }
+    
+    d->errorString = VByteArray("VFile::seek(): File is not open\n");
+    return false;
 }
 

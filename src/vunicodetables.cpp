@@ -1,3 +1,4 @@
+/*! \cond */
 
 static const unsigned short uc_property_trie[] = {
     // 0 - 0x11000
@@ -9422,4 +9423,5 @@ static const unsigned char uc_scripts[] = {
 
 } // namespace VUnicodeTables
 
+/*! \endcond */
 

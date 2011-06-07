@@ -1332,9 +1332,19 @@ VByteArray::operator const void *() const
     return d->str;
 }
 
+/*!
+ * Возвращает массив байтов, содержащий левые \a len байтов этого массива.
+ * Если \a len больше size(), то возвращается весь массив. Пример:
+ * \code
+ * VByteArray x("Pineapple");
+ * VByteArray y = x.left(4);
+ * // y == "Pine"
+ * \endcode
+ * \see right(), mid() и startsWith().
+ */
 VByteArray VByteArray::left(int len) const
 {
-    return VByteArray(d->str, len);
+    return (len > d->size ? *this : VByteArray(d->str, len));
 }
 
 VByteArray VByteArray::right(int len) const
@@ -1402,6 +1412,20 @@ VByteArray &VByteArray::setRawData(const char *data, uint size)
     return *this;
 }
 
+/*!
+ * Возвращает массив символов длиной \a width, содержащий этот массив,
+ * дополненный символом \a fill.\n
+ * Если \a truncate равно \c false и size() больше чем \a width,
+ * то возвращается копия этого массива.\n
+ * Если \a truncate равно \c true и size() больше \a width, то
+ * любой байт после \a width удаляется, а копия возвращается.\n
+ * Пример:
+ * \code
+ * VByteArray x("apple");
+ * VByteArray y = x.leftJustified(8, '.'); // y == "apple..."
+ * \endcode
+ * \see rightJustified()
+ */
 VByteArray VByteArray::leftJustified(int width, char fill, bool truncate) const
 {
     int p = width - d->size;
@@ -1859,4 +1883,12 @@ VByteArray &VByteArray::operator=(const char *str)
     d->size = l;
     return *this;
 }
+
+/*!
+ * \fn int VByteArray::capacity() const
+ * Возвращает максимальное число байтов, которые можно сохранить в
+ * массиве без перевыделения памяти. В общем случае, вам не понадобится
+ * эта функция. Только если вы захотите точно отслеживать память.
+ * \see reserve() и squeeze()
+ */
 

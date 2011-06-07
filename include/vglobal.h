@@ -28,6 +28,109 @@ typedef unsigned short         ushort;
 #define V_INT64_C(literal) literal ## LL
 #define V_UINT64_C(literal) literat ## ULL 
 
+// Compilers
+#if defined(__BORLANDC__) || defined(__CODEGEARC__)
+# define V_CC_BOR
+#elif defined(__COMO__)
+# define V_CC_COMEAU
+#elif defined(__EDG__)
+# define V_CC_EDG
+#elif defined(__ghs__)
+# define V_CC_GHS
+#elif defined(__GNUC__)
+# define V_CC_GNU
+#elif defined(__HIGHC__)
+# define V_CC_HIGHC
+#elif defined(__HP_aCC)
+# define V_CC_HPACC
+#elif defined(__INTEL_COMPILER) || defined(__ICC) || defined(__ECC) || defined(__ICL)
+# define V_CC_INTEL
+#elif defined(__KCC)
+# define V_CC_KAI
+#elif defined(__sgi) || defined(sgi)
+# define V_CC_MIPS
+#elif defined(_MSC_VER)
+# define V_CC_MSVC
+#elif defined(__MWERKS__)
+# define V_CC_MWERKS
+#elif defined(__PGI)
+# define V_CC_PGI
+#elif defined(__SUNPRO_C) || defined(__SUNPRO_CC)
+# define V_CC_SUN
+#elif defined(__DMC__) || defined(__SC__) || defined(__ZTC__)
+# define V_CC_SYM
+#elif defined(_SCO_DS)
+# define V_CC_USLC
+#elif defined(__WATCOMC__)
+# define V_CC_WAT
+#endif
+
+// Operation Systems
+#if defined(_AIX)
+# define V_OS_AIX
+#elif defined(__bsdi__)
+# define V_OS_BSDI
+#elif defined(macintosh) || defined(Macintosh) || (defined(__APPLE__) && defined(__MACH__))
+# define V_OS_DARWIN
+# define V_OS_MAC
+#elif defined(DGUX) || defined(__DGUX__) || defined(__dgux__)
+# define V_OS_DGUX
+#elif defined(_SEQUENT_) || defined(sequent)
+# define V_OS_DYNIX
+#elif defined(__FreeBSD__)
+# define V_OS_FREEBSD
+#elif defined(_hpux) || defined(hpux) || defined(__hpux)
+# define V_OS_HPUX
+#elif defined(__GNU__)
+# define V_OS_HURD
+#elif defined(sgi) || defined(__sgi)
+# define V_OS_IRIX
+#elif defined(linux) || defined(__linux)
+# define V_OS_LINUX
+#elif defined(__Lynx__)
+# define V_OS_LYNX
+#elif defined(MSDOS) || defined(__MSDOS__) || defined(_MSDOS) || defined(__DOS__)
+# define V_OS_MSDOS
+#elif defined(__NetBSD__)
+# define V_OS_NETBSD
+#elif defined(OS2) || defined(_OS2) || defined(__OS2__) || defined(__TOS_OS2__)
+# define V_OS_OS2
+#elif defined(__OpenBSD__)
+# define V_OS_OPENBSD
+#elif defined(__osf__) || defined(__osf)
+# define V_OS_OSF
+#elif defined(__QNX__) || defined(__QNXNTO__)
+# define V_OS_QNX
+#elif defined(sinux)
+# define V_OS_RELIANT
+#elif defined(M_I386) || defined(M_XENIX) || defined(_SCO_DS)
+# define V_OS_SCO
+#elif defined(sun) || defined(__sun)
+# define V_OS_SOLARIS
+#elif defined(__SYMBIAN32__)
+# define V_OS_SYMBIAN
+#elif defined(__unix__) || defined(__unix)
+# define V_OS_UNIX
+#elif defined(sco) || defined(_UNIXWARE7)
+# define V_OS_UNIXWARE
+#elif defined(_WIN32) || defined(__WIN32__) || defined(__WINDOWS__)
+# define V_OS_WIN32
+# if defined(_WIN64)
+#  define V_OS_WIN64
+# endif
+#elif defined(_WIN32_WCE)
+# define V_OS_WINCE
+#endif
+
+// Window systems
+#if defined(V_OS_WIN32)
+# define V_WS_WIN
+#elif defined(V_OS_MAC)
+# define V_WS_MAC
+#else
+# define V_WS_X11
+#endif
+
 /*! \cond */
 // служенбный класс. Размер целого
 template<int> struct VIntegerSize {};
@@ -47,9 +150,9 @@ template<class T> const T &vBound(const T &min, const T &value, const T &max)
 { return vMax(min, vMin(value, max)); }
 
 inline vint64 vRound64(vreal value)
-{ if(value<0) return vint64(value-0.5); return vint64(value+0.5); }
+{ if(value<0.0) return vint64(value-0.5); return vint64(value+0.5); }
 inline int vRound(vreal value)
-{ if(value<0) return int(value-0.5); return int(value+0.5); }
+{ if(value<0.0) return int(value-0.5); return int(value+0.5); }
 
 // класс для OR комбинаций
 template<class Enum>
@@ -111,7 +214,7 @@ if(!(test)) vFatal("ASSERT: \"%s\" в файле %s, в строке %d", #test,
 #define V_ASSERT_X(test, where, what) \
 if(!(test)) vFatal("ASSERT в %s: \"%s\", в файле %s, в строке %d", where, what, __FILE__, __LINE__) 
 #define V_CHECK_PTR(p) \
-if(!(p)) vWarning("В файле %s, в строке %d: Не хватает памяти", __FILE__, __LINE__)
+if(!(p)) vWarning("В файле %s, в строке %d: Недействительный указатель", __FILE__, __LINE__)
 
 template<class T> inline T *v_check_ptr(T *p) { V_CHECK_PTR(p); return p; }
 

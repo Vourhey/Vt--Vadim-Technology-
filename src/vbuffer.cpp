@@ -12,6 +12,31 @@ public:
     VByteArray defaultBuf;
 };
 
+/*!
+ * \class VBuffer
+ * \brief Реализует VIODevice интерфейс для VByteArray
+ *
+ * VBuffer позволяет вам записывать/читать VByteArray, используя
+ * VIODevice интерфейс. При этом VByteArray выглядит как обычный
+ * файл со случайным доступом. Пример:
+ * \code
+ * VBuffer buffer;
+ * char ch;
+ *
+ * buffer.open(VBuffer::ReadWrite);
+ * buffer.write("Vt is great!");
+ * buffer.seek(0);
+ * buffer.getChar(&ch);  // ch == 'V'
+ * buffer.getChar(&ch);  // ch == 't'
+ * buffer.getChar(&ch);  // ch == ' '
+ * buffer.getChar(&ch);  // ch == 'i'
+ * \endcode
+ *
+ * По умолчанию, создается собственный VByteArray для каждого VBuffer.
+ * Вы можете получить его, используя buffer(). Но вы можете установить
+ * собственный VByteArray, используя setBuffer() или при создании VBuffer.
+ */
+
 VBuffer::VBuffer()
     : VIODevice(new VBufferPrivate(this))
 {
@@ -130,8 +155,8 @@ vint64 VBuffer::readData(char *data, vint64 maxSize)
     if(maxSize > size())
 	maxSize = size();
 
-    memcpy(data, d_f()->ba->data()+size()-d->pos, maxSize);
-    data[maxSize] = '\0';
+    memcpy(data, d_f()->ba->data()+d->pos, maxSize);
+//    data[maxSize] = '\0';
     return maxSize;
 }
 
