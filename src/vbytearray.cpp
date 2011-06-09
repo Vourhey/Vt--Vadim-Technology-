@@ -1492,6 +1492,15 @@ char vToUpper(char ch)
     return ch;
 }
 
+/*!
+ * Возвращает копию массива, где каждый символ в нижнем регистре. Пример:
+ * \code
+ * VByteArray x("Vt by VoUrheY");
+ * VBytearray y = x.toLower();
+ * // y == "vt by vourhey"
+ * \endcode
+ * \see toUpper()
+ */
 VByteArray VByteArray::toLower() const
 {
     VByteArray ret;
@@ -1502,6 +1511,15 @@ VByteArray VByteArray::toLower() const
     return ret;
 }
 
+/*!
+ * Возвращает копию массива, где каждый символ в верхнем регистре. Пример:
+ * \code
+ * VByteArray x("Vt by VoUrheY");
+ * VByteArray y = x.toUpper();
+ * // y == "VT BY VOURHEY"
+ * \endcode
+ * \see toLower()
+ */
 VByteArray VByteArray::toUpper() const
 {
     VByteArray ret;
@@ -1512,6 +1530,13 @@ VByteArray VByteArray::toUpper() const
     return ret;
 }
 
+/*!
+ * Очищает VByteArray и заставляет использовать первые \a first
+ * байт массива \a data. Данные не копируются. VByteArray будет
+ * содержать только указатель на \a data. Это позволяет использовать
+ * всю силу VByteArray с существующими (не)константыми данными.
+ * \see data() и constData()
+ */
 VByteArray &VByteArray::setRawData(const char *data, uint size)
 {
     clear();
@@ -1677,6 +1702,15 @@ VList<VByteArray> VByteArray::split(char sep) const
     return ret;
 }
 
+/*!
+ * Освобождает всю неиспользоуемую память. Эта функция нужна для
+ * точным слежением за памятью. В общем, вам редко понадобится её
+ * вызывать. Так же она дает эфект только если после последней
+ * операции размер массива стал меньше. Для повышения производительности
+ * после вызова remove() память не освобождается, а остается на
+ * случай если потом массив снова увеличится.
+ * \see reserve() и capacity()
+ */
 void VByteArray::squeeze()
 {
     if(d->size == d->alloc)
@@ -1691,6 +1725,10 @@ void VByteArray::squeeze()
     d = x;
 }
 
+/*!
+ * Возвращает копию этого массива закодированного по основанию 16.
+ * \see fromHex()
+ */
 VByteArray VByteArray::toHex() const
 {
     VByteArray ret;
@@ -2055,6 +2093,18 @@ ushort VByteArray::toUShort(bool *ok, int base) const
     return ushort(ul);
 }
 
+/*!
+ * Возвращает массив, в котором удалены пробельные символы
+ * с начала и конца.\nПробельными считаются символы для
+ * которых isspace() возвращает \c true. Сюда входят
+ * ASCII символы '\\t', '\\n', '\\v', '\\f', '\\r' и ' '.
+ * \code
+ * VByteArray ba("  lots\t of\nwhitespace\r\n ");
+ * ba = ba.trimmed();
+ * // ba == "lots\t of\nwhitespace";
+ * \endcode
+ * \see simplified()
+ */
 VByteArray VByteArray::trimmed() const
 {
     VByteArray ret;
