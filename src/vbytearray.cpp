@@ -162,8 +162,86 @@ void VByteArray::reallocData(int size)
  * \class VByteArray
  * \brief Массив байтов
  *
- * Этот класс можно использовать как тип данных строка.
- * Т.е. вместо \c char \c *.
+ * VByteArray можно применять для хранения любой последовательности байтов (включая '\0').
+ * Использовать VByteArray гораздо удобнее <tt>const char *</tt>. Класс всегда заботится
+ * о том, чтобы данные заканчивались '\0'-символом.
+ *
+ * В дополнение к VByteArray, библиотека Vt также предоставляет класс VString. В нем
+ * хранятся 16-битные символы Unicode, позволяя хранить не ASCII/Latin-1 символы в вашем
+ * приложении. Если вам не нужна поддержка многих языков, то VByteArray хороший класс
+ * для хранения строк.
+ *
+ * Один из способов инициализации VByteArray - передать <tt>const char *</tt> в конструкторе.
+ * Например, следующий код создает массив из 5 символов:
+ * \code
+ * VByteArray ba("Hello");
+ * \endcode
+ * Несмотря на то, что size() равен 5, в массиве так же хранится '\0' символ.
+ *
+ * VByteArray всегда делает копию данных <tt>const char *</tt>. Однако, если вам нужно
+ * поработать с уже готовыми данными, можете использовать VByteArray::setRawData().
+ *
+ * Чтобы устонавить собственныый размер, используйте resize(). VByteArray использует
+ * индексирование начиная с 0, как обычный C++ массив. Для доступа к байтом используется
+ * operator[](). Для неконстантных массив, этот оператор возвращает ссылку на байт:
+ * \code
+ * VByteArray ba;
+ * ba.resize(5);
+ * ba[0] = 0x3c;
+ * ba[1] = 0xb8;
+ * ba[2] = 0x64;
+ * ba[3] = 0x18;
+ * ba[4] = 0xca;
+ * \endcode
+ * Для доступа "только чтение" имеется альтернативный синтаксис:
+ * \code
+ * for(int i=0; i<ba.size(); ++i)
+ * {
+ *     if(ba.at(i) >= 'a' && ba.at(i) <= 'f')
+ *         cout << "Найден символ в промежутке [a-f]" << endl;
+ * }
+ * \endcode
+ * Чтобы извлеч сразу несколько символов за раз используйте left(), right() или mid().
+ *
+ * Функции data() и constData() возвращают указатель на данные в массиве.
+ * Указатель однозначно будет заканчиваться '\0'-байтом.
+ *
+ * VByteArray предлагает следующие функции для изменения массива: append(), prepend(),
+ * insert(), replace() и remove(). Например:
+ * \code
+ * VByteArray x("and");
+ * x.prepend("rock ");         // x == "rock and"
+ * x.append(" roll");          // x == "rock and roll"
+ * x.replace(5, 3, "&");       // x == "rock & roll"
+ * \endcode
+ * Когда вы вызываете append() для массива, уже содержащего данные, память под массив
+ * будет перевыделена и новые данные скопированы на новое место. Если вы заранее
+ * знаете, сколько примерно будет байтов, то можете использовать reserve() чтобы
+ * зарезервировать память. Функция capacity() паказывает как много памяти выделено
+ * под массив.
+ *
+ * Если вы хотите найте все вхождения символа или строки в массиве, используйте
+ * indexOf() или lastIndexOf(). Поиск начинается с заданной позиции.
+ * Обе функции возвращают позицию найденого символа или строки, или -1 в случае
+ * неудачи. Дальше показан пример поиска:
+ * \code
+ * VByteArray ba("We must be <b>bold</b>, very <b>bold</b>");
+ * int j = 0;
+ * while ((j = ba.indexOf("<b>", j)) != -1) 
+ * {
+ *     cout << "Найден тег <b> в позиции " << j << endl;
+ *     ++j;
+ * }
+ * \endcode
+ * Для того, чтобы просто проверить содержит ли массив символ или строку,
+ * используйте contains(). Чтобы узнать, как часто повторяется символ или
+ * строка - count(). Чтобы заменить все вхождения на другое значения,
+ * используйте replace() с двумя параметрами.
+ *
+ * VByteArray объекты можно сравнивать с помощью operator<(), operator<=(),
+ * operator==(), operator>=() и другими. Сравнение проводится только
+ * по числовому представлению символа.
+ * \see VString
  */
 
 /*!
@@ -736,6 +814,7 @@ VByteArray &VByteArray::prepend(char ch)
  * text.toBase64();     // returns "VnQgaXMgZ3JlYXQh"
  * \endcode
  * Про алгоритм <a href="http://ru.wikipedia.org/wiki/Base32">подробнее</a>.
+ * \see fromBase64()
  */
 VByteArray VByteArray::toBase64() const
 {
@@ -776,6 +855,14 @@ VByteArray VByteArray::toBase64() const
     return tmp;
 }
 
+/*!
+ * Возвращает копию \a base64 закодированную по алгоритму Base64. Пример:
+ * \code
+ * VByteArray text("VnQgaXMgZ3JlYXQh");
+ * text.toBase64();     // returns "Vt is great!"
+ * \endcode
+ * \see toBase64()
+ */
 VByteArray VByteArray::fromBase64(const VByteArray &base64)
 {
     uint buf = 0;
@@ -1347,14 +1434,37 @@ VByteArray VByteArray::left(int len) const
     return (len > d->size ? *this : VByteArray(d->str, len));
 }
 
+/*!
+ * Возвращает массив, содержащий крайние справа \a len байтов этого массива.
+ * Если \a len больше size(), то возвращается весь массив. Пример:
+ * \code
+ * VByteArray x("Pineapple");
+ * VByteArray y = x.right(5);
+ * // y == "apple"
+ * \endcode
+ * \see endsWith(), left() и mid()
+ */
 VByteArray VByteArray::right(int len) const
 {
+    if(len > d->size) len = d->size;
     return VByteArray(d->str+(d->size-len), len);
 }
 
+/*!
+ * Возвращает массив, содержащий \a len байтов из этого массива, начиная с \a pos.
+ * Если \a len равно -1 (по умолчанию) или \a pos + \a len >= size(),
+ * возвращается массив начиная с \a pos и до конца этого массива. Пример:
+ * \code
+ * VByteArray x("Five pineapples");
+ * VByteArray y = x.mid(5, 4); // y == "pine"
+ * VByteArray z = x.mid(5);    // z == "pineapples"
+ * \endcode
+ * \see left() и rigth(
+ * \see left() и rigth())
+ */
 VByteArray VByteArray::mid(int pos, int len) const
 {
-    if(len == -1) len = d->size - pos;
+    if(len == -1 || (pos + len >= d->size)) len = d->size - pos;
     return VByteArray(d->str+pos, len);
 }
 
@@ -1445,6 +1555,18 @@ VByteArray VByteArray::leftJustified(int width, char fill, bool truncate) const
     return ret;
 }
 
+/*!
+ * Возвращает массив длиной \a width, который содержит этот массив
+ * и ему предшествуют \a fill символы.\nЕсли \a truncate равно \c false
+ * и размер массива больше чем \a width, то возвращается копия этого массива.
+ * \nЕсли \a truncate равно \c true и размер массива больше чем \a width, то
+ * полученный массив обрезается до \a width.\nПример:
+ * \code
+ * VByteArray x("apple");
+ * VByteArray y = x.rigthJustified(8, '.');  // y == "...apple"
+ * \endcode
+ * \see leftJustified()
+ */
 VByteArray VByteArray::rightJustified(int width, char fill, bool truncate) const
 {
     int p = width - d->size;
@@ -1485,6 +1607,19 @@ bool vIsAlpha(char ch)
 	   (ch >= 'A' && ch <= 'Z');
 }
 
+/*!
+ * Возвращает массив, в ктором все пробельные символы удалены с начала
+ * и конца, а повтороряющиеся заменены на один пробел.\n
+ * Пробельным считается символ для которого стандартная функция isspace()
+ * возвращает \c true. В них входят символы '\\t', '\\n', '\\v', 
+ * '\\f', '\\r' и ' '. Пример:
+ * \code
+ * VByteArray ba("   lots\t of\n\vwhitespace\r\n ");
+ * ba = ba.simplified();
+ * // ba == "lots of whitespace"
+ * \endcode
+ * \see trimmed()
+ */
 VByteArray VByteArray::simplified() const
 {
     if(d->size == 0)
@@ -1517,6 +1652,12 @@ VByteArray VByteArray::simplified() const
     return ret;
 }
 
+/*!
+ * Разбивает массив на подмассивы и возвращает список элементов. 
+ * \a sep выступает как символ-делитель.
+ * Если \a sep не встречается в массиве, то возвращается список с одним
+ * элементом - всем массивом.
+ */
 VList<VByteArray> VByteArray::split(char sep) const
 {
     VList<VByteArray> ret;
@@ -1575,6 +1716,15 @@ VByteArray VByteArray::toHex() const
     return ret;
 }
 
+/*!
+ * Возвращает копию \a hexEncoded массив, раскодированный из 
+ * шестнадцатиричного представления. Пример:
+ * \code
+ * VByteArray text = VByteArray::fromHex("567420697320677265617421");
+ * text.data();        // retruns "Vt is great!
+ * \endcode
+ * \see toHext()
+ */
 VByteArray VByteArray::fromHex(const VByteArray &hexEncoded)
 {
     VByteArray ret;
@@ -1736,6 +1886,13 @@ vulonglong vstrtoull(const char *nptr, const char **endptr, register int base, b
     return acc; 
 }	
 
+/*!
+ * Возвращает целочисленное long long представление массива по основанию \a base.
+ * Основание должно быть от 2 до 36. Возвращается 0 в случае неудачи.\n
+ * Если \a ok не равен 0: если конвертирование прошло с ошибками, то 
+ * *ok устанавливается в \c false; Иначе *ok устанавливается в \c true.
+ * \see number() и setNum()
+ */
 vlonglong VByteArray::toLongLong(bool *ok, int base) const
 {
     const char *end;
@@ -1749,6 +1906,19 @@ vlonglong VByteArray::toLongLong(bool *ok, int base) const
     return l;
 }
 
+/*!
+ * Возвращает целочисленное int представление массива по основанию \a base.
+ * Основание должно быть от 2 до 36. Возвращается 0 в случае неудачи.\n
+ * Если \a ok не равен 0: если конвертирование прошло с ошибками, то 
+ * *ok устанавливается в \c false; Иначе *ok устанавливается в \c true.
+ * \code
+ *  VByteArray str("FF");
+ *  bool ok;
+ *  int hex = str.toInt(&ok, 16);     // hex == 255, ok == true
+ *  int dec = str.toInt(&ok, 10);     // dec == 0, ok == false
+ * \endcode
+ * \see number() и setNum()
+ */
 int VByteArray::toInt(bool *ok, int base) const
 {
     vlonglong l = toLongLong(ok, base);
@@ -1762,6 +1932,19 @@ int VByteArray::toInt(bool *ok, int base) const
     return int(l);
 }
 
+/*!
+ * Возвращает целочисленное long представление массива по основанию \a base.
+ * Основание должно быть от 2 до 36. Возвращается 0 в случае неудачи.\n
+ * Если \a ok не равен 0: если конвертирование прошло с ошибками, то 
+ * *ok устанавливается в \c false; Иначе *ok устанавливается в \c true.
+ * \code
+ *  VByteArray str("FF");
+ *  bool ok;
+ *  int hex = str.toInt(&ok, 16);     // hex == 255, ok == true
+ *  int dec = str.toInt(&ok, 10);     // dec == 0, ok == false
+ * \endcode
+ * \see number() и setNum()
+ */
 long VByteArray::toLong(bool *ok, int base) const
 {
     vlonglong l = toLongLong(ok, base);
@@ -1774,6 +1957,13 @@ long VByteArray::toLong(bool *ok, int base) const
     return long(l);
 }
 
+/*!
+ * Возвращает целочисленное short представление массива по основанию \a base.
+ * Основание должно быть от 2 до 36. Возвращается 0 в случае неудачи.\n
+ * Если \a ok не равен 0: если конвертирование прошло с ошибками, то 
+ * *ok устанавливается в \c false; Иначе *ok устанавливается в \c true.
+ * \see number() и setNum()
+ */
 short VByteArray::toShort(bool *ok, int base) const
 {
     vlonglong l = toLongLong(ok, base);
@@ -1787,6 +1977,13 @@ short VByteArray::toShort(bool *ok, int base) const
     return short(l);
 }
 
+/*!
+ * Возвращает целочисленное unsigned long long представление массива по основанию \a base.
+ * Основание должно быть от 2 до 36. Возвращается 0 в случае неудачи.\n
+ * Если \a ok не равен 0: если конвертирование прошло с ошибками, то 
+ * *ok устанавливается в \c false; Иначе *ok устанавливается в \c true.
+ * \see number() и setNum()
+ */
 vulonglong VByteArray::toULongLong(bool *ok, int base) const
 {
     const char *endptr;
@@ -1798,6 +1995,13 @@ vulonglong VByteArray::toULongLong(bool *ok, int base) const
     return ul;
 }
 
+/*!
+ * Возвращает целочисленное unsigned int представление массива по основанию \a base.
+ * Основание должно быть от 2 до 36. Возвращается 0 в случае неудачи.\n
+ * Если \a ok не равен 0: если конвертирование прошло с ошибками, то 
+ * *ok устанавливается в \c false; Иначе *ok устанавливается в \c true.
+ * \see number() и setNum()
+ */
 uint VByteArray::toUInt(bool *ok, int base) const
 {
     vulonglong ul = toULongLong(ok, base);
@@ -1811,6 +2015,13 @@ uint VByteArray::toUInt(bool *ok, int base) const
     return uint(ul);
 }
 
+/*!
+ * Возвращает целочисленное unsigned long представление массива по основанию \a base.
+ * Основание должно быть от 2 до 36. Возвращается 0 в случае неудачи.\n
+ * Если \a ok не равен 0: если конвертирование прошло с ошибками, то 
+ * *ok устанавливается в \c false; Иначе *ok устанавливается в \c true.
+ * \see number() и setNum()
+ */
 ulong VByteArray::toULong(bool *ok, int base) const
 {
     vulonglong ul = toULongLong(ok, base);
@@ -1824,6 +2035,13 @@ ulong VByteArray::toULong(bool *ok, int base) const
     return ulong(ul);
 }
 
+/*!
+ * Возвращает целочисленное unsigned short представление массива по основанию \a base.
+ * Основание должно быть от 2 до 36. Возвращается 0 в случае неудачи.\n
+ * Если \a ok не равен 0: если конвертирование прошло с ошибками, то 
+ * *ok устанавливается в \c false; Иначе *ok устанавливается в \c true.
+ * \see number() и setNum()
+ */
 ushort VByteArray::toUShort(bool *ok, int base) const
 {
     vulonglong ul = toULongLong(ok, base);
@@ -1865,6 +2083,9 @@ VByteArray VByteArray::trimmed() const
     return ret;
 }
 
+/*!
+ * Назначает этому массиву массив \a other и возвращает ссылку.
+ */
 VByteArray &VByteArray::operator=(const VByteArray &other)
 {
     clear();
@@ -1874,6 +2095,9 @@ VByteArray &VByteArray::operator=(const VByteArray &other)
     return *this;
 }
 
+/*!
+ * \overload \n Назначает \a str этому массиву.
+ */
 VByteArray &VByteArray::operator=(const char *str)
 {
     clear();

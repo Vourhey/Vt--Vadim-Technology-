@@ -78,7 +78,84 @@
  *
  * VVector<T> один из классов-контейнеров библиотека Vt. Он хранит
  * элементы в соседних элементах памяти и обеспечивает быстрый доступ
- * с помощью индексов.
+ * с помощью индексов.\n\n
+ * VList<T> и VLinkedList<T> обеспечивают похожую функциональность:
+ * \li В большинстве случаев VList является хорошим выбором. Операции как
+ * prepend() и insert() обычно более быстрые чем у VVector, а доступ через
+ * индексы быстрее чем у VLinkedList.
+ * \li Если вам нужен настоящий связный список, гарантирующий вставку и 
+ * удаление за константное время, то используйте VLinkedList.
+ * \li Если вам нужно, чтобы элементы распологались подряд в памяти,
+ * используйте VVector. При этом помните, что вставка/удаление могут
+ * быть очень медленными, если имеется длинный вектор.
+ *
+ * Дальше показан пример, как создать вектор для целых чисел и для строк:
+ *
+ * \code
+ * VVector<int> integerVector;
+ * VVector<VString> stringVector;
+ * \endcode
+ *
+ * При создании вы можете указать размер массива. Например, следующий
+ * код создает массив из 200 элементов:
+ *
+ * \code
+ * VVector<double> vector(200);
+ * \endcode
+ *
+ * Каждый элемент инициализируется занчением по умолчанию. Если вы хотите
+ * присвоить свое значение, то используйте конструктор с двумя аргументами:
+ *
+ * \code
+ * VVector<VString> vector(200, "Pass");
+ * \endcode
+ *
+ * Вы также можете использовать fill() для заполнения вектора.\n\n
+ * VVector использует индексирование, начиная с 0, как обычный C++ массив.
+ * Для доступа к элементам можно использовать operator[](). В ееконстантном
+ * векторе operator[]() возвращает ссылку на элемент:
+ *
+ * \code
+ * if(vector[0] == "Liz")
+ *     vector[0] = "Elizabeth";
+ * \endcode
+ *
+ * Если вам нужно только получить значение (не изменяя его), лучше использовать at():
+ *
+ * \code
+ * for(int i=0; i < vector.size(); ++i)
+ * {
+ *    if(vector.at(i) == "Alfonso")
+ *        cout << "Найдено Alfonso в позиции " << i << endl;
+ * }
+ * \endcode
+ *
+ * Ещё один способ доступа к данным - вызов data(). Эта функция возвращает указатель
+ * на первый элемент в векторе. Вы можете работать с ним как с обычным массивом.
+ * С помощью этого указателя можно менять элементы. Но помните, что вы сами
+ * должны будете проверять на выход за пределы массива.
+ *
+ * Если вам нужно найти все вхождения какого-либо элемента в массив, используйте
+ * indexOf() или lastIndexOf(). Каждой из них можно задать начало поиска.
+ * Обе функции возвращают -1 в случае неудачи. Например:
+ *
+ * \code
+ * int i = vector.indexOf("Harumi");
+ * if(i != -1)
+ *     cout << "Первое вхождение Harumi в позиции " << i << endl;
+ * \endcode
+ * Если вам нужно просто узнать, имеется ли элемент в массиве, используйте contains().
+ * Если хотите узнать как часто элемент повторяется, используйте count().
+ *
+ * VVector предлагает основные функции для вставки, перемещения и удаления:
+ * insert(), replace(), remove(), prepend() и append(). Все они могут требовать
+ * достаточно много времени для больших массивов, так как приходится перемещать все
+ * элементы. Если приходится часто вставлять/удалять элементы, то используйте VList или VLinkedList.
+ *
+ * Как и другие контейнерные классы, VVector представляет Java итераторы
+ * (VVectorIterator и VMutableVectorIterator) и STL итераторы (VVector::const_iterator и
+ * VVector::iterator).
+ * \see VVectorIterator, VMutableVectorIterator, VList и VLinkedList
  */
 
 /*!
@@ -604,5 +681,41 @@
  * // list: [2.65, 12.4, 0.68]
  * \endcode
  * \see fromList() и VList::fromVector()
+ */
+/*!
+ * \fn std::vector<T> VVector::toStdVector() const
+ * Возвращает объект std::vector, содержащий данные из этого VVector. Пример:
+ * \code
+ * VVector<double> vector;
+ * vector << 1.2 << 0.5 << 3.14;
+ *
+ * std::vector<double> stdvector = vector.toStdVector();
+ * \endcode
+ * \see fromStdVector() и VList::toStdList()
+ */
+/*!
+ * \fn VVector<T> VVector::fromList(const VList<T> &list)
+ * Возвращает объект VVector, содержащий данные из \a list. Пример:
+ * \code
+ *  VStringList list;
+ *  list << "Sven" << "Kim" << "Ola";
+ *
+ *  VVector<VString> vect = VVector<VString>::fromList(list);
+ *  // vect: ["Sven", "Kim", "Ola"]
+ * \endcode
+ * \see toList() и VList::toVector()
+ */
+/*!
+ * \fn VVector<T> VVector::fromStdVector(const std::vector<T> &vector)
+ * Возвращает объект VVector, содержащий данные из \a vector в таком же порядке. Пример:
+ * \code
+ * std::vector<double> stdvector;
+ * stdvector.push_back(1.2);
+ * stdvector.push_back(0.5);
+ * stdvector.push_back(3.14);
+ *
+ * VVector<double> vector = VVector<double>::fromStdVector(stdvector);
+ * \endcode
+ * \see toStdVector() и VList::fromStdList()
  */
 

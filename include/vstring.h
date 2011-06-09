@@ -182,6 +182,8 @@ public:
     VChar &operator[](uint position);
     const VChar operator[](uint position) const;
 
+    VString &operator=(const VString &other);
+
     // for STL
     void push_back(const VString &other) { append(other); }
     void push_back(VChar ch)             { append(ch); }

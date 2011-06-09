@@ -408,7 +408,8 @@ void VString::chop(int n)
 
 void VString::clear()
 {
-    free(d);
+    if(d != &shared_null)
+	free(d);
     d = &shared_null;
 }
 
@@ -995,5 +996,16 @@ int VString::toWCharArray(wchar_t *array) const
 	memcpy(array, utf16(), size()*sizeof(wchar_t));
     }
     return size();
+}
+
+VString &VString::operator=(const VString &other)
+{
+    clear();
+    reallocData(other.d->_s);
+    d->_s = other.d->_s;
+
+    for(int i=0; i<=d->_s; ++i)
+	d->data[i] = other.d->data[i];
+    return *this;
 }
 

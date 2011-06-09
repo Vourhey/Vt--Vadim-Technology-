@@ -154,7 +154,7 @@ public:
     bool operator!=(const VVector<T> &other) const
 	{ return !operator==(other); }
     bool operator==(const VVector<T> &other) const;
-    T &operator[](int i) { return value(i, T()); }
+    T &operator[](int i) { if(i>d->size || i<0) { vWarning("VVector::operator[]: i за пределами массива"); i = 0; } return d->data[i]; }
     const T &operator[](int i) const { return at(i); }
     VVector<T> operator+(const VVector<T> &other) const
 	{ VVector<T> ret = *this; ret += other; return ret; }
