@@ -1,7 +1,7 @@
 first: all
 
 CXX = g++
-CXXFLAGS = -g -Wall
+CXXFLAGS = -Wall -O3
 INCPATH = -Iinclude/
 TARGET  = libVtLib.a
 OUT_DIR = .obj
@@ -94,14 +94,6 @@ $(OUT_DIR)/vstringlist.o: src/vstringlist.cpp include/vstringlist.h
 
 $(OUT_DIR)/valgorithms.o: src/valgorithms.cpp include/valgorithms.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) src/valgorithms.cpp -o $(OUT_DIR)/valgorithms.o
-
-test: $(TARGET) main.cpp
-	$(CXX) $(CXXFLAGS) main.cpp $(TARGET) $(INCPATH) -o test
-
-doc: Doxyfile $(HEADERS) $(SOURCES) html
-	doxygen Doxyfile
-
-html:
 
 clean:
 	rm $(OBJECTS) 

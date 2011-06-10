@@ -18,5 +18,9 @@
 #include "vpoint.h"
 #include "vsize.h"
 #include "vvector.h"
+#include "vbuffer.h"
+#include "vchar.h"
+#include "vstring.h"
+#include "vstringlist.h"
 
 #endif

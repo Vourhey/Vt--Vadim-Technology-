@@ -111,14 +111,14 @@ public:
 	    else while(j++ != 0)      n = n->prevNode;
 	    return n;
 	}
-	iterator &operator++() { i = i->nextNode; return i; }
+	iterator &operator++() { i = i->nextNode; return *this; }
 	iterator operator++(int)
 	    { Node *n = i; i = i->nextNode; return n; }
 	iterator &operator+= (int j) 
 	    { i = operator+(j); return *this; }
 	iterator operator-(int j) const
 	    { return operator+(-j); }
-	iterator &operator--() { i = i->prevNode; return i; }
+	iterator &operator--() { i = i->prevNode; return *this; }
 	iterator operator--(int)
 	    { Node *n = i; i = i->prevNode; return n; }
 	iterator &operator-=(int j) { return operator+=(-j); }
